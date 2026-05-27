@@ -1,0 +1,76 @@
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Build
+build
+coverage
+
+# Cache
+.cache
+.temp
+tmp
+
+# Logs
+*.log
+
+# OS
+Thumbs.db
+
+# Testing
+playwright-report
+test-results
+
+# Vite
+vite.config.ts.timestamp-*
+
+# Turbo
+.turbo
+
+# Next/Nuxt
+.next
+.nuxt
+
+# pnpm
+.pnpm-store
+
+# Yarn
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# Local configs
+*.local
+
+# Optional
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
