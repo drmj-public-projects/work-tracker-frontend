@@ -1,0 +1,210 @@
+import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import {
+  Mail,
+  Lock,
+  ArrowRight,
+  Building2,
+  Sun,
+  Moon,
+  Globe,
+} from 'lucide-react'
+import { Input } from '@/shared/components/Input'
+import { useAuthStore } from '@/shared/store/authStore'
+import { loginSchema, type LoginFormData } from '../validation/login.schema'
+
+export function LoginPage() {
+  const { t, i18n } = useTranslation('auth')
+  const navigate = useNavigate()
+  const login = useAuthStore((state) => state.login)
+
+  const [apiError, setApiError] = useState<string | null>(null)
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+      rememberMe: false,
+    },
+  })
+
+  const [isDark, setIsDark] = useState(() => {
+    return document.documentElement.classList.contains('dark')
+  })
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  }, [isDark])
+
+  const toggleTheme = () => {
+    setIsDark((prev) => !prev)
+  }
+
+  const toggleLanguage = () => {
+    const nextLang = i18n.language === 'es' ? 'en' : 'es'
+    i18n.changeLanguage(nextLang)
+  }
+
+  const onSubmit = async (data: LoginFormData) => {
+    setApiError(null)
+    try {
+      await login({ email: data.email, password: data.password })
+      navigate('/select-organization')
+    } catch {
+      setApiError('Invalid email or password. Please try again.')
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 relative">
+      <div className="absolute top-4 right-4 flex items-center gap-2">
+        <button
+          type="button"
+          onClick={toggleLanguage}
+          className="p-2 rounded-lg bg-card border border-border text-foreground hover:bg-muted transition-all flex items-center gap-1.5 text-sm font-medium"
+          aria-label="Toggle language"
+        >
+          <Globe className="w-4 h-4" />
+          {i18n.language === 'es' ? 'EN' : 'ES'}
+        </button>
+
+        <button
+          type="button"
+          onClick={toggleTheme}
+          className="p-2 rounded-lg bg-card border border-border text-foreground hover:bg-muted transition-all"
+          aria-label="Toggle theme"
+        >
+          {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+        </button>
+      </div>
+
+      <div className="flex flex-col items-center mb-8">
+        <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center mb-4">
+          <svg
+            className="w-7 h-7 text-primary-foreground"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+        </div>
+        <h1 className="text-2xl font-bold text-foreground mb-2">
+          {t('app.name')}
+        </h1>
+        <p className="text-muted-foreground text-sm">
+          {t('app.tagline')}
+        </p>
+      </div>
+
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-full max-w-[420px] bg-card rounded-2xl shadow-lg border border-border p-8"
+      >
+        {apiError && (
+          <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
+            {apiError}
+          </div>
+        )}
+
+        <div className="mb-5">
+          <Input
+            label={t('login.emailLabel')}
+            icon={<Mail className="w-5 h-5" />}
+            type="email"
+            placeholder={t('login.emailPlaceholder')}
+            error={errors.email?.message}
+            {...register('email')}
+          />
+        </div>
+
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-sm font-medium text-foreground">
+              {t('login.passwordLabel')}
+            </label>
+            <button
+              type="button"
+              className="text-sm text-primary hover:text-primary-hover transition-colors"
+            >
+              {t('login.forgotPassword')}
+            </button>
+          </div>
+          <Input
+            icon={<Lock className="w-5 h-5" />}
+            type="password"
+            placeholder={t('login.passwordPlaceholder')}
+            error={errors.password?.message}
+            {...register('password')}
+          />
+        </div>
+
+        <div className="flex items-center mb-6">
+          <input
+            type="checkbox"
+            id="remember"
+            className="w-4 h-4 rounded border-border text-primary focus:ring-ring"
+            {...register('rememberMe')}
+          />
+          <label
+            htmlFor="remember"
+            className="ml-2 text-sm text-muted-foreground"
+          >
+            {t('login.rememberMe')}
+          </label>
+        </div>
+
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full h-[var(--button-height-md)] bg-primary text-primary-foreground rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-primary-hover active:bg-primary-active transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isSubmitting ? 'Signing in...' : t('login.signInButton')}
+          <ArrowRight className="w-4 h-4" />
+        </button>
+
+        <div className="flex items-center gap-4 my-6">
+          <div className="flex-1 h-px bg-border" />
+          <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
+            {t('login.orDivider')}
+          </span>
+          <div className="flex-1 h-px bg-border" />
+        </div>
+
+        <button
+          type="button"
+          className="w-full h-[var(--button-height-md)] bg-secondary text-secondary-foreground rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-secondary/80 transition-all border border-border"
+        >
+          <Building2 className="w-5 h-5" />
+          {t('login.ssoButton')}
+        </button>
+      </form>
+
+      <p className="mt-6 text-sm text-muted-foreground">
+        {t('login.noAccount')}{' '}
+        <button
+          type="button"
+          className="text-primary hover:text-primary-hover font-medium transition-colors"
+        >
+          {t('login.registerLink')}
+        </button>
+      </p>
+    </div>
+  )
+}
