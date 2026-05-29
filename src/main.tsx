@@ -3,10 +3,12 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import './shared/i18n'
 import { useThemeStore } from './shared/store/themeStore'
+import { setupAuthInterceptor } from './shared/services'
 import App from './App.tsx'
 
-// Hydrate theme before rendering
+// Setup interceptors before rendering
 useThemeStore.getState().hydrateFromStorage()
+setupAuthInterceptor()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

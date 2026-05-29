@@ -1,9 +1,11 @@
 import { apiService } from '../api'
 
+const STORAGE_KEY = 'work_tracker_token'
+
 export function setupAuthInterceptor(): void {
   apiService.client.interceptors.request.use(
     (config) => {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem(STORAGE_KEY)
       if (token) {
         config.headers.Authorization = `Bearer ${token}`
       }
