@@ -1,23 +1,17 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  Mail,
-  Lock,
-  ArrowRight,
-  Building2,
-  Sun,
-  Moon,
-  Globe,
-} from 'lucide-react'
+import { Mail, Lock, ArrowRight, Building2 } from 'lucide-react'
 import { Input } from '@/shared/components/Input'
+import { ThemeToggle } from '@/shared/components/ThemeToggle'
+import { LanguageToggle } from '@/shared/components/LanguageToggle'
 import { useAuthStore } from '@/shared/store/authStore'
 import { loginSchema, type LoginFormData } from '../validation/login.schema'
 
 export function LoginPage() {
-  const { t, i18n } = useTranslation('auth')
+  const { t } = useTranslation('auth')
   const navigate = useNavigate()
   const login = useAuthStore((state) => state.login)
 
@@ -36,27 +30,6 @@ export function LoginPage() {
     },
   })
 
-  const [isDark, setIsDark] = useState(() => {
-    return document.documentElement.classList.contains('dark')
-  })
-
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-  }, [isDark])
-
-  const toggleTheme = () => {
-    setIsDark((prev) => !prev)
-  }
-
-  const toggleLanguage = () => {
-    const nextLang = i18n.language === 'es' ? 'en' : 'es'
-    i18n.changeLanguage(nextLang)
-  }
-
   const onSubmit = async (data: LoginFormData) => {
     setApiError(null)
     try {
@@ -70,24 +43,12 @@ export function LoginPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 relative">
       <div className="absolute top-4 right-4 flex items-center gap-2">
-        <button
-          type="button"
-          onClick={toggleLanguage}
-          className="p-2 rounded-lg bg-card border border-border text-foreground hover:bg-muted transition-all flex items-center gap-1.5 text-sm font-medium"
-          aria-label="Toggle language"
-        >
-          <Globe className="w-4 h-4" />
-          {i18n.language === 'es' ? 'EN' : 'ES'}
-        </button>
-
-        <button
-          type="button"
-          onClick={toggleTheme}
-          className="p-2 rounded-lg bg-card border border-border text-foreground hover:bg-muted transition-all"
-          aria-label="Toggle theme"
-        >
-          {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-        </button>
+        <div className="p-2 rounded-lg bg-card border border-border">
+          <LanguageToggle />
+        </div>
+        <div className="p-2 rounded-lg bg-card border border-border">
+          <ThemeToggle />
+        </div>
       </div>
 
       <div className="flex flex-col items-center mb-8">
