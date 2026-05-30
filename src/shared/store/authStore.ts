@@ -2,7 +2,6 @@ import { create } from 'zustand'
 import type { LoginRequestDTO } from '@/features/auth/dto/request/login.request.dto'
 import type { SelectOrganizationRequestDTO } from '@/features/organizations/dto/request/select-organization.request.dto'
 import type { User } from '@/features/auth/models/user.model'
-import type { Organization } from '@/features/auth/models/organization.model'
 import type { UserOrganizationRole } from '@/shared/types/user-organization-role.enum'
 import { authService } from '@/features/auth/services/auth.service'
 import { mapLoginResponseToAuthData } from '@/features/auth/mappers/auth.mapper'
@@ -18,7 +17,6 @@ const STORAGE_KEYS = {
 interface AuthState {
   user: User | null
   token: string | null
-  organizations: Organization[]
   selectedOrganizationId: string | null
   role: UserOrganizationRole | null
   isLoading: boolean
@@ -33,7 +31,6 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   token: null,
-  organizations: [],
   selectedOrganizationId: null,
   role: null,
   isLoading: false,
@@ -51,7 +48,6 @@ export const useAuthStore = create<AuthState>((set) => ({
       set({
         token: authData.token,
         user: authData.user,
-        organizations: authData.organizations,
         isAuthenticated: true,
         isLoading: false,
       })
@@ -95,7 +91,6 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({
       user: null,
       token: null,
-      organizations: [],
       selectedOrganizationId: null,
       role: null,
       isAuthenticated: false,

@@ -19,6 +19,7 @@ export function mapOrganizationResponseToOrganization(
   return {
     id: dto.id,
     name: dto.name,
+    memberCount: dto.memberCount ?? 0,
   }
 }
 
@@ -26,6 +27,5 @@ export function mapLoginResponseToAuthData(dto: LoginResponseDTO) {
   return {
     token: dto.token,
     user: mapUserResponseToUser(dto.user),
-    organizations: dto.organizationList.map(mapOrganizationResponseToOrganization),
   }
 }

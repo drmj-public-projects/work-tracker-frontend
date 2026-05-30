@@ -1,16 +1,18 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { Building2, Plus, ArrowRight } from 'lucide-react'
+import { Building2, Plus, ArrowRight, Users } from 'lucide-react'
 import { useAuthStore } from '@/shared/store/authStore'
+import { useOrganizations } from '@/features/organizations/hooks/useOrganizations'
 import type { Organization } from '@/features/auth/models/organization.model'
 
 export function SelectOrganizationPage() {
   const { t } = useTranslation('auth')
   const navigate = useNavigate()
   const user = useAuthStore((state) => state.user)
-  const organizations = useAuthStore((state) => state.organizations)
   const selectOrganization = useAuthStore((state) => state.selectOrganization)
+
+  const { data: organizations, isLoading } = useOrganizations()
 
   const [isSelecting, setIsSelecting] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -28,6 +30,17 @@ export function SelectOrganizationPage() {
   }
 
   const userName = user?.name?.split(' ')[0] || t('userMenu.guest')
+
+  if (isLoading) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center p-4">
+        <div className="w-full max-w-4xl text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">{t('selectOrganization.loading')}</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="h-full flex flex-col items-center justify-center p-4">
@@ -48,24 +61,25 @@ export function SelectOrganizationPage() {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-          {organizations.map((org) => (
+          {organizations?.map((org) => (
             <div
               key={org.id}
               className="bg-card rounded-2xl border border-border p-6 hover:shadow-md transition-shadow flex flex-col"
             >
-
               <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
                 <Building2 className="w-6 h-6 text-primary" />
               </div>
 
-
               <h3 className="text-lg font-semibold text-foreground mb-1">
                 {org.name}
               </h3>
-              <p className="text-sm text-muted-foreground mb-6">
-                Organization
-              </p>
+              <p className="text-sm text-muted-foreground mb-2">Organization</p>
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mb-6">
+                <Users className="w-3 h-3" />
+                <span>
+                  {org.memberCount} {org.memberCount === 1 ? 'member' : 'members'}
+                </span>
+              </div>
 
               <button
                 type="button"
@@ -101,7 +115,7 @@ export function SelectOrganizationPage() {
           </button>
         </div>
 
-        {organizations.length === 0 && (
+        {(!organizations || organizations.length === 0) && (
           <div className="text-center mt-8">
             <p className="text-muted-foreground">
               {t('selectOrganization.noOrganizations')}
