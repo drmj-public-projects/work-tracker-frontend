@@ -1,13 +1,16 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { MapPin, ChevronDown } from 'lucide-react'
+import { MapPin } from 'lucide-react'
 import {
   useStartWorkSession,
   useUpdateActiveWorkSession,
 } from '@/features/work-sessions/hooks/useWorkSessions'
 import { useWorkSessionPlaces } from '@/features/work-sessions/hooks/useWorkSessionPlaces'
 import { useAuthStore } from '@/shared/store/authStore'
-import { Input } from '@/shared/components/Input'
+import { PlaceSelect } from '@/shared/components/PlaceSelect'
+import { BreakMinutesInput } from '@/shared/components/BreakMinutesInput'
+import { NotesTextarea } from '@/shared/components/NotesTextarea'
+import { withLocation } from '@/shared/utils/withLocation'
 import { TimerCircle } from './TimerCircle'
 import { EndSessionModal } from './EndSessionModal'
 import type { WorkSession } from '@/features/work-sessions/models/work-session.model'
@@ -59,7 +62,6 @@ export function WorkSessionForm({
     }
   }, [currentSession])
 
-  // Close the end-session modal when the mutation finishes (transition from true → false)
   const prevIsEndingRef = useRef(isEnding)
   useEffect(() => {
     const prev = prevIsEndingRef.current
@@ -102,7 +104,7 @@ export function WorkSessionForm({
     setValidationErrors(errors)
     if (Object.keys(errors).length > 0) return
 
-    const start = (latitude?: number, longitude?: number) => {
+    withLocation(requiresLocation, (latitude, longitude) => {
       startWorkSession.mutate({
         userId: user.id,
         organizationId: selectedOrganizationId,
@@ -112,41 +114,13 @@ export function WorkSessionForm({
         latitude,
         longitude,
       })
-    }
-
-    if (requiresLocation && 'geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          start(position.coords.latitude, position.coords.longitude)
-        },
-        () => {
-          start()
-        },
-        { enableHighAccuracy: true, timeout: 10000 }
-      )
-    } else {
-      start()
-    }
+    })
   }, [user, selectedOrganizationId, selectedPlaceId, breakMinutes, notes, startWorkSession, t, requiresLocation])
 
   const handleConfirmEnd = useCallback(() => {
-    const end = (latitude?: number, longitude?: number) => {
+    withLocation(requiresLocation, (latitude, longitude) => {
       onConfirmEndSession({ latitude, longitude })
-    }
-
-    if (requiresLocation && 'geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          end(position.coords.latitude, position.coords.longitude)
-        },
-        () => {
-          end()
-        },
-        { enableHighAccuracy: true, timeout: 10000 }
-      )
-    } else {
-      end()
-    }
+    })
   }, [onConfirmEndSession, requiresLocation])
 
   const isRunning = !!currentSession
@@ -183,6 +157,7 @@ export function WorkSessionForm({
         {isRunning ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* Location (read-only) */}
               <div className="w-full">
                 <label className="block text-sm font-medium text-foreground mb-2">
                   {t('activeTimer.place')}
@@ -193,36 +168,23 @@ export function WorkSessionForm({
                 </div>
               </div>
 
-              <Input
-                type="number"
-                min={0}
+              <BreakMinutesInput
                 label={t('activeTimer.breakMinutesLabel')}
                 value={activeBreakMinutes}
-                onChange={(e) =>
-                  setActiveBreakMinutes(Math.max(0, Number(e.target.value)))
-                }
+                onChange={setActiveBreakMinutes}
                 onBlur={handleUpdateActive}
-                suffix={
-                  <span className="text-sm text-muted-foreground font-medium">
-                    MIN
-                  </span>
-                }
+                suffix="MIN"
               />
             </div>
 
-            <div className="w-full">
-              <label className="block text-sm font-medium text-foreground mb-2">
-                {t('activeTimer.notesLabel')}
-              </label>
-              <textarea
-                value={activeNotes}
-                onChange={(e) => setActiveNotes(e.target.value)}
-                onBlur={handleUpdateActive}
-                placeholder={t('activeTimer.notesPlaceholder')}
-                rows={3}
-                className="w-full min-h-[100px] bg-input/30 border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all px-4 py-3 resize-y"
-              />
-            </div>
+            <NotesTextarea
+              label={t('activeTimer.notesLabel')}
+              value={activeNotes}
+              onChange={setActiveNotes}
+              onBlur={handleUpdateActive}
+              placeholder={t('activeTimer.notesPlaceholder')}
+              rows={3}
+            />
           </>
         ) : (
           <>
@@ -247,92 +209,47 @@ export function WorkSessionForm({
             ) : (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="w-full">
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      {t('activeTimer.selectLocation')}
-                    </label>
-                    <div className="relative">
-                      <select
-                        value={selectedPlaceId}
-                        onChange={(e) => {
-                          setSelectedPlaceId(e.target.value)
-                          if (validationErrors.place) {
-                            setValidationErrors((prev) => ({
-                              ...prev,
-                              place: undefined,
-                            }))
-                          }
-                        }}
-                        className={`w-full h-[var(--input-height-md)] bg-input/30 border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all appearance-none px-4 pr-10 ${
-                          validationErrors.place
-                            ? 'border-destructive focus:ring-destructive/30'
-                            : 'border-border focus:ring-ring'
-                        }`}
-                      >
-                        <option value="">
-                          {t('activeTimer.selectLocationPlaceholder')}
-                        </option>
-                        {places.map((place) => (
-                          <option key={place.id} value={place.id}>
-                            {place.name}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
-                    </div>
-                    {validationErrors.place && (
-                      <p className="mt-1.5 text-sm text-destructive">
-                        {validationErrors.place}
-                      </p>
-                    )}
-                  </div>
-
-                  <Input
-                    type="number"
-                    min={0}
-                    label={t('activeTimer.breakMinutesLabel')}
-                    placeholder={t('activeTimer.breakMinutesPlaceholder')}
-                    value={breakMinutes}
-                    onChange={(e) =>
-                      setBreakMinutes(Math.max(0, Number(e.target.value)))
-                    }
-                    suffix={
-                      <span className="text-sm text-muted-foreground font-medium">
-                        MIN
-                      </span>
-                    }
-                  />
-                </div>
-
-                <div className="w-full">
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    {t('activeTimer.notesLabel')}
-                  </label>
-                  <textarea
-                    value={notes}
-                    onChange={(e) => {
-                      setNotes(e.target.value)
-                      if (validationErrors.notes) {
+                  <PlaceSelect
+                    label={t('activeTimer.selectLocation')}
+                    placeholder={t('activeTimer.selectLocationPlaceholder')}
+                    value={selectedPlaceId}
+                    onChange={(value) => {
+                      setSelectedPlaceId(value)
+                      if (validationErrors.place) {
                         setValidationErrors((prev) => ({
                           ...prev,
-                          notes: undefined,
+                          place: undefined,
                         }))
                       }
                     }}
-                    placeholder={t('activeTimer.notesPlaceholder')}
-                    rows={3}
-                    className={`w-full min-h-[100px] bg-input/30 border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all px-4 py-3 resize-y ${
-                      validationErrors.notes
-                        ? 'border-destructive focus:ring-destructive/30'
-                        : 'border-border focus:ring-ring'
-                    }`}
+                    options={places.map((p) => ({ id: p.id, name: p.name }))}
+                    error={validationErrors.place}
                   />
-                  {validationErrors.notes && (
-                    <p className="mt-1.5 text-sm text-destructive">
-                      {validationErrors.notes}
-                    </p>
-                  )}
+
+                  <BreakMinutesInput
+                    label={t('activeTimer.breakMinutesLabel')}
+                    value={breakMinutes}
+                    onChange={setBreakMinutes}
+                    suffix="MIN"
+                  />
                 </div>
+
+                <NotesTextarea
+                  label={t('activeTimer.notesLabel')}
+                  value={notes}
+                  onChange={(value) => {
+                    setNotes(value)
+                    if (validationErrors.notes) {
+                      setValidationErrors((prev) => ({
+                        ...prev,
+                        notes: undefined,
+                      }))
+                    }
+                  }}
+                  placeholder={t('activeTimer.notesPlaceholder')}
+                  error={validationErrors.notes}
+                  rows={3}
+                />
               </>
             )}
           </>

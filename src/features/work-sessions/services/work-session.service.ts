@@ -1,5 +1,6 @@
 import { apiService } from '@/shared/services'
 import type { StartWorkSessionRequestDTO } from '../dto/request/start-work-session.request.dto'
+import type { CreateManualWorkSessionRequestDTO } from '../dto/request/create-manual-work-session.request.dto'
 import type { UpdateWorkSessionRequestDTO } from '../dto/request/update-work-session.request.dto'
 import type { WorkSessionResponseDTO } from '../dto/response/work-session.response.dto'
 import type { WorkSessionPlaceResponseDTO } from '../dto/response/work-session-place.response.dto'
@@ -11,6 +12,11 @@ export const workSessionService = {
     data: StartWorkSessionRequestDTO
   ): Promise<AxiosResponse<ApiResponse<WorkSessionResponseDTO>>> =>
     apiService.post<ApiResponse<WorkSessionResponseDTO>>('/workSessions/start', data),
+
+  createManual: (
+    data: CreateManualWorkSessionRequestDTO
+  ): Promise<AxiosResponse<ApiResponse<WorkSessionResponseDTO>>> =>
+    apiService.post<ApiResponse<WorkSessionResponseDTO>>('/workSessions/manual', data),
 
   updateActive: (
     data: UpdateWorkSessionRequestDTO

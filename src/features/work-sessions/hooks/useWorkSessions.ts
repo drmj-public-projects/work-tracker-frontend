@@ -5,6 +5,7 @@ import {
   mapWorkSessionPlaceResponseToWorkSession,
 } from '../mappers/work-session.mapper'
 import type { StartWorkSessionRequestDTO } from '../dto/request/start-work-session.request.dto'
+import type { CreateManualWorkSessionRequestDTO } from '../dto/request/create-manual-work-session.request.dto'
 import type { UpdateWorkSessionRequestDTO } from '../dto/request/update-work-session.request.dto'
 
 const WORK_SESSION_QUERY_KEY = 'workSessions'
@@ -27,6 +28,22 @@ export function useStartWorkSession() {
   return useMutation({
     mutationFn: async (data: StartWorkSessionRequestDTO) => {
       const response = await workSessionService.start(data)
+      return mapWorkSessionResponseToWorkSession(response.data.data)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [WORK_SESSION_QUERY_KEY, 'current'],
+      })
+    },
+  })
+}
+
+export function useCreateManualWorkSession() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (data: CreateManualWorkSessionRequestDTO) => {
+      const response = await workSessionService.createManual(data)
       return mapWorkSessionResponseToWorkSession(response.data.data)
     },
     onSuccess: () => {
