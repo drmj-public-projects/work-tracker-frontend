@@ -8,7 +8,9 @@ import { WorkSessionsPage } from '@/features/work-sessions/pages/WorkSessionsPag
 import { ActiveTimerPage } from '@/features/work-sessions/pages/ActiveTimerPage'
 import { ManualEntryPage } from '@/features/work-sessions/pages/ManualEntryPage'
 import { PlacesPage } from '@/features/places/pages/PlacesPage'
-import { ReportsPage } from '@/features/reports/pages/ReportsPage'
+import { AnalyticsPage } from '@/features/reports/pages/AnalyticsPage'
+import { CalendarPage } from '@/features/reports/pages/CalendarPage'
+import { HistoryPage } from '@/features/reports/pages/HistoryPage'
 import { SettingsPage } from '@/features/settings/pages/SettingsPage'
 import { ProfilePage } from '@/features/profile/pages/ProfilePage'
 import { EditProfilePage } from '@/features/profile/pages/EditProfilePage'
@@ -35,7 +37,9 @@ export function AppRouter() {
             element={<ManualEntryPage />}
           />
           <Route path="/places" element={<PlacesPage />} />
-          <Route path="/reports" element={<ReportsPage />} />
+          <Route path="/reports/analytics" element={<AnalyticsPage />} />
+          <Route path="/reports/calendar" element={<CalendarPage />} />
+          <Route path="/reports/history" element={<HistoryPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/profile/edit" element={<EditProfilePage />} />

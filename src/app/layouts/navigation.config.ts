@@ -40,7 +40,23 @@ export const navigationItems: NavItem[] = [
   {
     label: 'nav.reports',
     icon: 'BarChart3',
-    path: '/reports',
+    children: [
+      {
+        label: 'nav.analytics',
+        icon: 'BarChart3',
+        path: '/reports/analytics',
+      },
+      {
+        label: 'nav.calendar',
+        icon: 'Calendar',
+        path: '/reports/calendar',
+      },
+      {
+        label: 'nav.history',
+        icon: 'Clock',
+        path: '/reports/history',
+      },
+    ],
   },
   {
     label: 'nav.settings',

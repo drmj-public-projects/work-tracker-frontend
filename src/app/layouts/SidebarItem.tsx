@@ -8,6 +8,8 @@ import {
   MapPin,
   BarChart3,
   Settings,
+  Calendar,
+  Clock,
   ChevronDown,
   type LucideIcon,
 } from 'lucide-react'
@@ -22,6 +24,8 @@ const iconMap: Record<string, LucideIcon> = {
   MapPin,
   BarChart3,
   Settings,
+  Calendar,
+  Clock,
 }
 
 interface SidebarItemProps {
