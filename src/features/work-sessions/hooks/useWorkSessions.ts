@@ -57,8 +57,18 @@ export function useEndWorkSession() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ id, userId }: { id: string; userId: string }) => {
-      const response = await workSessionService.end(id, userId)
+    mutationFn: async ({
+      id,
+      userId,
+      latitude,
+      longitude,
+    }: {
+      id: string
+      userId: string
+      latitude?: number
+      longitude?: number
+    }) => {
+      const response = await workSessionService.end(id, userId, latitude, longitude)
       return mapWorkSessionResponseToWorkSession(response.data.data)
     },
     onSuccess: () => {

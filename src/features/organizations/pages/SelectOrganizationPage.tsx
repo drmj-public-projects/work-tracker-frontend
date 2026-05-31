@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import { Building2, Plus, ArrowRight, Users } from 'lucide-react'
 import { useAuthStore } from '@/shared/store/authStore'
 import { useOrganizations } from '@/features/organizations/hooks/useOrganizations'
+import { organizationService } from '@/features/organizations/services/organization.service'
+import { mapOrganizationSettingsResponseToOrganizationSettings } from '@/features/organizations/mappers/organization-settings.mapper'
 import type { Organization } from '@/features/auth/models/organization.model'
 
 export function SelectOrganizationPage() {
@@ -22,6 +24,11 @@ export function SelectOrganizationPage() {
     setIsSelecting(org.id)
     try {
       await selectOrganization({ organizationId: org.id })
+      const settingsResponse = await organizationService.getSettings(org.id)
+      const settings = mapOrganizationSettingsResponseToOrganizationSettings(
+        settingsResponse.data.data
+      )
+      useAuthStore.getState().setOrganizationSettings(settings)
       navigate('/dashboard')
     } catch {
       setError(t('selectOrganization.error'))

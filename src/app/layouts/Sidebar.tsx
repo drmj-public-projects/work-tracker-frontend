@@ -1,7 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Menu, X } from 'lucide-react'
 import { useLayoutStore } from '@/shared/store/layoutStore'
+import { useAuthStore } from '@/shared/store/authStore'
 import { navigationItems } from './navigation.config'
 import { SidebarItem } from './SidebarItem'
 import { SidebarFooter } from './SidebarFooter'
@@ -14,6 +15,27 @@ export function Sidebar() {
     toggleSidebar,
     closeMobileSidebar,
   } = useLayoutStore()
+
+  const allowsManualEntry = useAuthStore(
+    (state) => state.organizationSettings?.allowManualEntries ?? false
+  )
+
+  const visibleNavItems = useMemo(() => {
+    return navigationItems
+      .map((item) => {
+        if (!item.children) return item
+        return {
+          ...item,
+          children: item.children.filter(
+            (child) => !child.requireManualEntries || allowsManualEntry
+          ),
+        }
+      })
+      .filter((item) => {
+        if (!item.children) return true
+        return item.children.length > 0
+      })
+  }, [allowsManualEntry])
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -67,7 +89,7 @@ export function Sidebar() {
         </div>
 
         <nav className="flex-1 overflow-y-auto py-4 space-y-1 px-2">
-          {navigationItems.map((item, index) => (
+          {visibleNavItems.map((item, index) => (
             <SidebarItem
               key={`${item.label}-${index}`}
               item={item}

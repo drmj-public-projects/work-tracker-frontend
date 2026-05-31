@@ -19,9 +19,15 @@ export const workSessionService = {
 
   end: (
     id: string,
-    userId: string
-  ): Promise<AxiosResponse<ApiResponse<WorkSessionResponseDTO>>> =>
-    apiService.post<ApiResponse<WorkSessionResponseDTO>>(`/workSessions/${id}/end?userId=${userId}`),
+    userId: string,
+    latitude?: number,
+    longitude?: number
+  ): Promise<AxiosResponse<ApiResponse<WorkSessionResponseDTO>>> => {
+    let url = `/workSessions/${id}/end?userId=${userId}`
+    if (latitude !== undefined) url += `&latitude=${latitude}`
+    if (longitude !== undefined) url += `&longitude=${longitude}`
+    return apiService.post<ApiResponse<WorkSessionResponseDTO>>(url)
+  },
 
   getCurrentWorkSession: (): Promise<
     AxiosResponse<ApiResponse<WorkSessionPlaceResponseDTO | null>>

@@ -5,6 +5,7 @@ export interface NavItem {
   icon: string
   path?: string
   roles?: UserOrganizationRole[]
+  requireManualEntries?: boolean
   children?: NavItem[]
 }
 
@@ -27,6 +28,7 @@ export const navigationItems: NavItem[] = [
         label: 'nav.manualEntry',
         icon: 'Plus',
         path: '/work-sessions/manual',
+        requireManualEntries: false,
       },
     ],
   },

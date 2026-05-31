@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MapPin, ChevronDown } from 'lucide-react'
 import {
@@ -14,7 +14,7 @@ import type { WorkSession } from '@/features/work-sessions/models/work-session.m
 
 interface WorkSessionFormProps {
   currentSession: WorkSession | null
-  onConfirmEndSession: () => void
+  onConfirmEndSession: (params?: { latitude?: number; longitude?: number }) => void
   isEnding: boolean
 }
 
@@ -26,6 +26,8 @@ export function WorkSessionForm({
   const { t } = useTranslation('auth')
   const selectedOrganizationId = useAuthStore((state) => state.selectedOrganizationId)
   const user = useAuthStore((state) => state.user)
+  const organizationSettings = useAuthStore((state) => state.organizationSettings)
+  const requiresLocation = organizationSettings?.requireLocation ?? false
   const {
     data: places,
     isLoading: isLoadingPlaces,
@@ -56,6 +58,16 @@ export function WorkSessionForm({
       setOriginalNotes(currentSession.notes || '')
     }
   }, [currentSession])
+
+  // Close the end-session modal when the mutation finishes (transition from true → false)
+  const prevIsEndingRef = useRef(isEnding)
+  useEffect(() => {
+    const prev = prevIsEndingRef.current
+    prevIsEndingRef.current = isEnding
+    if (prev && !isEnding && showEndModal) {
+      setShowEndModal(false)
+    }
+  }, [isEnding, showEndModal])
 
   const handleUpdateActive = useCallback(() => {
     const breakChanged = activeBreakMinutes !== originalBreakMinutes
@@ -102,7 +114,7 @@ export function WorkSessionForm({
       })
     }
 
-    if ('geolocation' in navigator) {
+    if (requiresLocation && 'geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           start(position.coords.latitude, position.coords.longitude)
@@ -115,7 +127,27 @@ export function WorkSessionForm({
     } else {
       start()
     }
-  }, [user, selectedOrganizationId, selectedPlaceId, breakMinutes, notes, startWorkSession, t])
+  }, [user, selectedOrganizationId, selectedPlaceId, breakMinutes, notes, startWorkSession, t, requiresLocation])
+
+  const handleConfirmEnd = useCallback(() => {
+    const end = (latitude?: number, longitude?: number) => {
+      onConfirmEndSession({ latitude, longitude })
+    }
+
+    if (requiresLocation && 'geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          end(position.coords.latitude, position.coords.longitude)
+        },
+        () => {
+          end()
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      )
+    } else {
+      end()
+    }
+  }, [onConfirmEndSession, requiresLocation])
 
   const isRunning = !!currentSession
 
@@ -310,7 +342,7 @@ export function WorkSessionForm({
       <EndSessionModal
         isOpen={showEndModal}
         onClose={() => setShowEndModal(false)}
-        onConfirm={onConfirmEndSession}
+        onConfirm={handleConfirmEnd}
         isPending={isEnding}
         placeName={currentSession?.place.name || ''}
         breakMinutes={activeBreakMinutes}

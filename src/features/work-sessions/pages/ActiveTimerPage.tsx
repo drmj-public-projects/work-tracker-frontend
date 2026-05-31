@@ -6,13 +6,18 @@ export function ActiveTimerPage() {
   const { data: currentSession, isLoading: isLoadingSession } = useCurrentWorkSession()
   const endWorkSession = useEndWorkSession()
 
-  const handleEndSession = useCallback(() => {
-    if (!currentSession) return
-    endWorkSession.mutate({
-      id: currentSession.id,
-      userId: currentSession.userId,
-    })
-  }, [currentSession, endWorkSession])
+  const handleEndSession = useCallback(
+    ({ latitude, longitude }: { latitude?: number; longitude?: number } = {}) => {
+      if (!currentSession) return
+      endWorkSession.mutate({
+        id: currentSession.id,
+        userId: currentSession.userId,
+        latitude,
+        longitude,
+      })
+    },
+    [currentSession, endWorkSession]
+  )
 
   if (isLoadingSession) {
     return (

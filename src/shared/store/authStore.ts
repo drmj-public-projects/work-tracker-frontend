@@ -3,6 +3,7 @@ import type { LoginRequestDTO } from '@/features/auth/dto/request/login.request.
 import type { SelectOrganizationRequestDTO } from '@/features/organizations/dto/request/select-organization.request.dto'
 import type { User } from '@/features/auth/models/user.model'
 import type { UserOrganizationRole } from '@/shared/types/user-organization-role.enum'
+import type { OrganizationSettings } from '@/features/organizations/models/organization-settings.model'
 import { authService } from '@/features/auth/services/auth.service'
 import { mapLoginResponseToAuthData } from '@/features/auth/mappers/auth.mapper'
 import { queryClient } from '@/app/providers'
@@ -12,6 +13,7 @@ const STORAGE_KEYS = {
   user: 'work_tracker_user',
   selectedOrg: 'work_tracker_selected_org',
   role: 'work_tracker_role',
+  orgSettings: 'work_tracker_org_settings',
 } as const
 
 interface AuthState {
@@ -19,11 +21,13 @@ interface AuthState {
   token: string | null
   selectedOrganizationId: string | null
   role: UserOrganizationRole | null
+  organizationSettings: OrganizationSettings | null
   isLoading: boolean
   isAuthenticated: boolean
 
   login: (data: LoginRequestDTO) => Promise<void>
   selectOrganization: (data: SelectOrganizationRequestDTO) => Promise<void>
+  setOrganizationSettings: (settings: OrganizationSettings) => void
   logout: () => void
   hydrateFromStorage: () => void
 }
@@ -33,6 +37,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   token: null,
   selectedOrganizationId: null,
   role: null,
+  organizationSettings: null,
   isLoading: false,
   isAuthenticated: false,
 
@@ -79,11 +84,17 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
+  setOrganizationSettings: (settings: OrganizationSettings) => {
+    localStorage.setItem(STORAGE_KEYS.orgSettings, JSON.stringify(settings))
+    set({ organizationSettings: settings })
+  },
+
   logout: () => {
     localStorage.removeItem(STORAGE_KEYS.token)
     localStorage.removeItem(STORAGE_KEYS.user)
     localStorage.removeItem(STORAGE_KEYS.selectedOrg)
     localStorage.removeItem(STORAGE_KEYS.role)
+    localStorage.removeItem(STORAGE_KEYS.orgSettings)
 
     // Clear all TanStack Query cache to prevent data leaks between users
     queryClient.clear()
@@ -93,6 +104,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       token: null,
       selectedOrganizationId: null,
       role: null,
+      organizationSettings: null,
       isAuthenticated: false,
       isLoading: false,
     })
@@ -103,15 +115,21 @@ export const useAuthStore = create<AuthState>((set) => ({
     const userStr = localStorage.getItem(STORAGE_KEYS.user)
     const selectedOrg = localStorage.getItem(STORAGE_KEYS.selectedOrg)
     const role = localStorage.getItem(STORAGE_KEYS.role) as UserOrganizationRole | null
+    const orgSettingsStr = localStorage.getItem(STORAGE_KEYS.orgSettings)
 
     if (token && userStr) {
       try {
         const user = JSON.parse(userStr) as User
+        let organizationSettings: OrganizationSettings | null = null
+        if (orgSettingsStr) {
+          organizationSettings = JSON.parse(orgSettingsStr) as OrganizationSettings
+        }
         set({
           token,
           user,
           selectedOrganizationId: selectedOrg,
           role,
+          organizationSettings,
           isAuthenticated: true,
         })
       } catch {
@@ -119,6 +137,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         localStorage.removeItem(STORAGE_KEYS.user)
         localStorage.removeItem(STORAGE_KEYS.selectedOrg)
         localStorage.removeItem(STORAGE_KEYS.role)
+        localStorage.removeItem(STORAGE_KEYS.orgSettings)
       }
     }
   },
