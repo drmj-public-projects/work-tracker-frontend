@@ -2,6 +2,7 @@ import { apiService } from '@/shared/services'
 import type { OrganizationResponseDTO } from '@/shared/types/organization.response.dto'
 import type { OrganizationSettingsResponseDTO } from '../dto/response/organization-settings.response.dto'
 import type { SaveOrganizationSettingsRequestDTO } from '../dto/request/save-organization-settings.request.dto'
+import type { CreateOrganizationRequestDTO } from '../dto/request/create-organization.request.dto'
 import type { ApiResponse } from '@/shared/types/api-response.type'
 import type { AxiosResponse } from 'axios'
 
@@ -17,4 +18,7 @@ export const organizationService = {
 
   saveSettings: (id: string, dto: SaveOrganizationSettingsRequestDTO): Promise<AxiosResponse<ApiResponse<OrganizationSettingsResponseDTO>>> =>
     apiService.put<ApiResponse<OrganizationSettingsResponseDTO>>(`/organizations/${id}/settings`, dto),
+
+  create: (dto: CreateOrganizationRequestDTO): Promise<AxiosResponse<ApiResponse<OrganizationResponseDTO>>> =>
+    apiService.post<ApiResponse<OrganizationResponseDTO>>('/organizations', dto),
 }

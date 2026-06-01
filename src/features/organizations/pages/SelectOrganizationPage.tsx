@@ -6,6 +6,9 @@ import { useAuthStore } from '@/shared/store/authStore'
 import { useOrganizations } from '@/features/organizations/hooks/useOrganizations'
 import { organizationService } from '@/features/organizations/services/organization.service'
 import { mapOrganizationSettingsResponseToOrganizationSettings } from '@/features/organizations/mappers/organization-settings.mapper'
+import { JoinOrganizationCard } from '../components/JoinOrganizationCard'
+import { JoinOrganizationModal } from '../components/JoinOrganizationModal'
+import { CreateOrganizationModal } from '../components/CreateOrganizationModal'
 import type { Organization } from '@/features/auth/models/organization.model'
 
 export function SelectOrganizationPage() {
@@ -18,6 +21,8 @@ export function SelectOrganizationPage() {
 
   const [isSelecting, setIsSelecting] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
   const handleSelectOrg = async (org: Organization) => {
     setError(null)
@@ -108,6 +113,7 @@ export function SelectOrganizationPage() {
 
           <button
             type="button"
+            onClick={() => setIsCreateModalOpen(true)}
             className="bg-card rounded-2xl border border-dashed border-border p-6 hover:border-primary hover:bg-primary/5 transition-all flex flex-col items-center justify-center text-center min-h-[200px]"
           >
             <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mb-4">
@@ -120,6 +126,8 @@ export function SelectOrganizationPage() {
               {t('selectOrganization.createDescription')}
             </p>
           </button>
+
+          <JoinOrganizationCard onClick={() => setIsJoinModalOpen(true)} />
         </div>
 
         {(!organizations || organizations.length === 0) && (
@@ -129,6 +137,16 @@ export function SelectOrganizationPage() {
             </p>
           </div>
         )}
+
+        <JoinOrganizationModal
+          isOpen={isJoinModalOpen}
+          onClose={() => setIsJoinModalOpen(false)}
+        />
+
+        <CreateOrganizationModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+        />
       </div>
     </div>
   )
