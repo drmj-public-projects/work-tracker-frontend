@@ -19,23 +19,33 @@ export function Sidebar() {
   const allowsManualEntry = useAuthStore(
     (state) => state.organizationSettings?.allowManualEntries ?? false
   )
+  const userRole = useAuthStore((state) => state.role)
+
+  const hasRoleAccess = (item: typeof navigationItems[0]) => {
+    if (!item.roles || item.roles.length === 0) return true
+    return userRole ? item.roles.includes(userRole) : false
+  }
 
   const visibleNavItems = useMemo(() => {
     return navigationItems
+      .filter((item) => hasRoleAccess(item))
       .map((item) => {
         if (!item.children) return item
+        const visibleChildren = item.children
+          .filter((child) => hasRoleAccess(child))
+          .filter(
+            (child) => !child.requireManualEntries || allowsManualEntry
+          )
         return {
           ...item,
-          children: item.children.filter(
-            (child) => !child.requireManualEntries || allowsManualEntry
-          ),
+          children: visibleChildren,
         }
       })
       .filter((item) => {
         if (!item.children) return true
         return item.children.length > 0
       })
-  }, [allowsManualEntry])
+  }, [allowsManualEntry, userRole])
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {

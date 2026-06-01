@@ -12,6 +12,7 @@ import { AnalyticsPage } from '@/features/reports/pages/AnalyticsPage'
 import { CalendarPage } from '@/features/reports/pages/CalendarPage'
 import { HistoryPage } from '@/features/reports/pages/HistoryPage'
 import { SettingsPage } from '@/features/settings/pages/SettingsPage'
+import { InvitationCodesPage } from '@/features/memberships/pages/InvitationCodesPage'
 import { ProfilePage } from '@/features/profile/pages/ProfilePage'
 import { EditProfilePage } from '@/features/profile/pages/EditProfilePage'
 
@@ -40,6 +41,7 @@ export function AppRouter() {
           <Route path="/reports/analytics" element={<AnalyticsPage />} />
           <Route path="/reports/calendar" element={<CalendarPage />} />
           <Route path="/reports/history" element={<HistoryPage />} />
+          <Route path="/memberships/invitation-codes" element={<InvitationCodesPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/profile/edit" element={<EditProfilePage />} />

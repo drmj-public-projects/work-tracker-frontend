@@ -23,7 +23,7 @@ export function SelectOrganizationPage() {
     setError(null)
     setIsSelecting(org.id)
     try {
-      await selectOrganization({ organizationId: org.id })
+      await selectOrganization({ organizationId: org.id }, org.name)
       const settingsResponse = await organizationService.getSettings(org.id)
       const settings = mapOrganizationSettingsResponseToOrganizationSettings(
         settingsResponse.data.data

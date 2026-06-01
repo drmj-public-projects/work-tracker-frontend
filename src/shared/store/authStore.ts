@@ -14,20 +14,23 @@ const STORAGE_KEYS = {
   selectedOrg: 'work_tracker_selected_org',
   role: 'work_tracker_role',
   orgSettings: 'work_tracker_org_settings',
+  orgName: 'work_tracker_org_name',
 } as const
 
 interface AuthState {
   user: User | null
   token: string | null
   selectedOrganizationId: string | null
+  selectedOrganizationName: string | null
   role: UserOrganizationRole | null
   organizationSettings: OrganizationSettings | null
   isLoading: boolean
   isAuthenticated: boolean
 
   login: (data: LoginRequestDTO) => Promise<void>
-  selectOrganization: (data: SelectOrganizationRequestDTO) => Promise<void>
+  selectOrganization: (data: SelectOrganizationRequestDTO, organizationName?: string) => Promise<void>
   setOrganizationSettings: (settings: OrganizationSettings) => void
+  setOrganizationName: (name: string) => void
   logout: () => void
   hydrateFromStorage: () => void
 }
@@ -36,6 +39,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   token: null,
   selectedOrganizationId: null,
+  selectedOrganizationName: null,
   role: null,
   organizationSettings: null,
   isLoading: false,
@@ -62,7 +66,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
-  selectOrganization: async (data: SelectOrganizationRequestDTO) => {
+  selectOrganization: async (data: SelectOrganizationRequestDTO, organizationName?: string) => {
     set({ isLoading: true })
     try {
       const response = await authService.selectOrganization(data)
@@ -71,10 +75,14 @@ export const useAuthStore = create<AuthState>((set) => ({
       localStorage.setItem(STORAGE_KEYS.token, token)
       localStorage.setItem(STORAGE_KEYS.selectedOrg, organizationId)
       localStorage.setItem(STORAGE_KEYS.role, role)
+      if (organizationName) {
+        localStorage.setItem(STORAGE_KEYS.orgName, organizationName)
+      }
 
       set({
         token,
         selectedOrganizationId: organizationId,
+        selectedOrganizationName: organizationName ?? null,
         role,
         isLoading: false,
       })
@@ -89,20 +97,27 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ organizationSettings: settings })
   },
 
+  setOrganizationName: (name: string) => {
+    localStorage.setItem(STORAGE_KEYS.orgName, name)
+    set({ selectedOrganizationName: name })
+  },
+
   logout: () => {
     localStorage.removeItem(STORAGE_KEYS.token)
     localStorage.removeItem(STORAGE_KEYS.user)
     localStorage.removeItem(STORAGE_KEYS.selectedOrg)
     localStorage.removeItem(STORAGE_KEYS.role)
     localStorage.removeItem(STORAGE_KEYS.orgSettings)
+    localStorage.removeItem(STORAGE_KEYS.orgName)
 
-    // Clear all TanStack Query cache to prevent data leaks between users
+    // Clear all TanStack Query cache to prevent data leakage between users
     queryClient.clear()
 
     set({
       user: null,
       token: null,
       selectedOrganizationId: null,
+      selectedOrganizationName: null,
       role: null,
       organizationSettings: null,
       isAuthenticated: false,
@@ -116,6 +131,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     const selectedOrg = localStorage.getItem(STORAGE_KEYS.selectedOrg)
     const role = localStorage.getItem(STORAGE_KEYS.role) as UserOrganizationRole | null
     const orgSettingsStr = localStorage.getItem(STORAGE_KEYS.orgSettings)
+    const orgName = localStorage.getItem(STORAGE_KEYS.orgName)
 
     if (token && userStr) {
       try {
@@ -128,6 +144,7 @@ export const useAuthStore = create<AuthState>((set) => ({
           token,
           user,
           selectedOrganizationId: selectedOrg,
+          selectedOrganizationName: orgName,
           role,
           organizationSettings,
           isAuthenticated: true,
@@ -138,6 +155,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         localStorage.removeItem(STORAGE_KEYS.selectedOrg)
         localStorage.removeItem(STORAGE_KEYS.role)
         localStorage.removeItem(STORAGE_KEYS.orgSettings)
+        localStorage.removeItem(STORAGE_KEYS.orgName)
       }
     }
   },

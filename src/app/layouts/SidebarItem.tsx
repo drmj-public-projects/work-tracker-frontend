@@ -11,9 +11,12 @@ import {
   Calendar,
   Clock,
   ChevronDown,
+  Users,
+  Ticket,
   type LucideIcon,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
+import { useAuthStore } from '@/shared/store/authStore'
 import type { NavItem } from './navigation.config'
 
 const iconMap: Record<string, LucideIcon> = {
@@ -26,6 +29,8 @@ const iconMap: Record<string, LucideIcon> = {
   Settings,
   Calendar,
   Clock,
+  Users,
+  Ticket,
 }
 
 interface SidebarItemProps {
@@ -44,9 +49,10 @@ export function SidebarItem({ item, collapsed, depth = 0 }: SidebarItemProps) {
     )
   })
 
-  // Role check - simplified for now
+  // Role check
+  const userRole = useAuthStore((state) => state.role)
   if (item.roles && item.roles.length > 0) {
-    const hasAccess = false
+    const hasAccess = userRole ? item.roles.includes(userRole) : false
     if (!hasAccess) return null
   }
 

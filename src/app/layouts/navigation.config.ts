@@ -59,6 +59,18 @@ export const navigationItems: NavItem[] = [
     ],
   },
   {
+    label: 'nav.memberships',
+    icon: 'Users',
+    roles: ['ADMIN', 'EMPLOYER'],
+    children: [
+      {
+        label: 'nav.invitationCodes',
+        icon: 'Ticket',
+        path: '/memberships/invitation-codes',
+      },
+    ],
+  },
+  {
     label: 'nav.settings',
     icon: 'Settings',
     path: '/settings',
