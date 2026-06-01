@@ -1,4 +1,6 @@
 import { apiService } from '../api'
+import { queryClient } from '@/app/providers'
+import { useAuthStore } from '@/shared/store/authStore'
 
 const STORAGE_KEY = 'work_tracker_token'
 
@@ -12,5 +14,17 @@ export function setupAuthInterceptor(): void {
       return config
     },
     (error) => Promise.reject(error)
+  )
+
+  apiService.client.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error.response?.status === 403) {
+        useAuthStore.getState().logout()
+        queryClient.clear()
+        window.location.href = '/login'
+      }
+      return Promise.reject(error)
+    }
   )
 }

@@ -15,6 +15,7 @@ import { SettingsPage } from '@/features/settings/pages/SettingsPage'
 import { InvitationCodesPage } from '@/features/memberships/pages/InvitationCodesPage'
 import { ProfilePage } from '@/features/profile/pages/ProfilePage'
 import { EditProfilePage } from '@/features/profile/pages/EditProfilePage'
+import { ProtectedRoute, RoleGuard } from './guards'
 
 export function AppRouter() {
   return (
@@ -29,22 +30,33 @@ export function AppRouter() {
           />
         </Route>
 
-        <Route element={<AppLayout />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/work-sessions" element={<WorkSessionsPage />} />
-          <Route path="/work-sessions/timer" element={<ActiveTimerPage />} />
-          <Route
-            path="/work-sessions/manual"
-            element={<ManualEntryPage />}
-          />
-          <Route path="/places" element={<PlacesPage />} />
-          <Route path="/reports/analytics" element={<AnalyticsPage />} />
-          <Route path="/reports/calendar" element={<CalendarPage />} />
-          <Route path="/reports/history" element={<HistoryPage />} />
-          <Route path="/memberships/invitation-codes" element={<InvitationCodesPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/profile/edit" element={<EditProfilePage />} />
+        <Route element={<ProtectedRoute />}>
+          <Route element={<AppLayout />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/work-sessions" element={<WorkSessionsPage />} />
+            <Route path="/work-sessions/timer" element={<ActiveTimerPage />} />
+            <Route
+              path="/work-sessions/manual"
+              element={<ManualEntryPage />}
+            />
+            <Route path="/places" element={<PlacesPage />} />
+            <Route path="/reports/analytics" element={<AnalyticsPage />} />
+            <Route path="/reports/calendar" element={<CalendarPage />} />
+            <Route path="/reports/history" element={<HistoryPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profile/edit" element={<EditProfilePage />} />
+
+            <Route element={<RoleGuard allowedRoles={['ADMIN', 'EMPLOYER']} />}>
+              <Route
+                path="/memberships/invitation-codes"
+                element={<InvitationCodesPage />}
+              />
+            </Route>
+
+            <Route element={<RoleGuard allowedRoles={['ADMIN']} />}>
+              <Route path="/settings" element={<SettingsPage />} />
+            </Route>
+          </Route>
         </Route>
 
         <Route path="/" element={<Navigate to="/login" replace />} />
