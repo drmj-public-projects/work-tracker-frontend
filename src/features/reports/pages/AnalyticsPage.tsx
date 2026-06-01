@@ -5,6 +5,7 @@ import { useWorkSessionSummary, useWorkSessionComparison } from '../hooks/useRep
 import { usePlaces } from '@/features/places/hooks/usePlaces'
 import { useReportsStore } from '../store/reportsStore'
 import { useMemo } from 'react'
+import { formatCurrency } from '@/shared/utils/time-formatters'
 import { AnalyticsFilters } from '../components/AnalyticsFilters'
 import { SummaryCards } from '../components/SummaryCards'
 import { TrendsChart } from '../components/charts/TrendsChart'
@@ -51,8 +52,10 @@ export function AnalyticsPage() {
         pay: acc.pay + block.totalPay,
         timerMinutes: acc.timerMinutes + block.timerMinutes,
         timerPay: acc.timerPay + block.timerPay,
+        manualMinutes: acc.manualMinutes + block.manualMinutes,
+        manualPay: acc.manualPay + block.manualPay,
       }),
-      { sessions: 0, minutes: 0, pay: 0, timerMinutes: 0, timerPay: 0 }
+      { sessions: 0, minutes: 0, pay: 0, timerMinutes: 0, timerPay: 0, manualMinutes: 0, manualPay: 0 }
     )
   }, [summary])
 
@@ -132,7 +135,7 @@ export function AnalyticsPage() {
                     {t('analytics.timerEntry')}
                   </span>
                   <span className="font-medium">
-                    {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(totals?.timerPay ?? 0)}
+                    {formatCurrency(totals?.timerPay ?? 0)}
                     {' '}({totals && totals.pay > 0 ? Math.round((totals.timerPay / totals.pay) * 100) : 0}%)
                   </span>
                 </div>
@@ -142,7 +145,7 @@ export function AnalyticsPage() {
                     {t('analytics.manualEntry')}
                   </span>
                   <span className="font-medium">
-                    {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(totals?.manualPay ?? 0)}
+                    {formatCurrency(totals?.manualPay ?? 0)}
                     {' '}({totals && totals.pay > 0 ? Math.round((totals.manualPay / totals.pay) * 100) : 0}%)
                   </span>
                 </div>

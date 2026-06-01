@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react'
+import { useMemo, useCallback } from 'react'
 import { ChevronLeft, ChevronRight, MapPin } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useReportsStore } from '../store/reportsStore'
@@ -16,7 +16,12 @@ import {
 import { formatDuration } from '@/shared/utils/time-formatters'
 import type { WorkSessionSummary } from '../../models/work-session-summary.model'
 
-export function CalendarGrid() {
+interface CalendarGridProps {
+  selectedDay: Date | null
+  onSelectDay: (day: Date | null) => void
+}
+
+export function CalendarGrid({ selectedDay, onSelectDay }: CalendarGridProps) {
   const { t } = useTranslation('auth')
   const { calendarFilters, setCalendarFilters } = useReportsStore()
   const selectedOrganizationId = useAuthStore((s) => s.selectedOrganizationId)
@@ -73,27 +78,19 @@ export function CalendarGrid() {
     return Math.max(...Array.from(dayDataMap.values()).map((d) => d.minutes))
   }, [dayDataMap])
 
-  const [selectedDay, setSelectedDay] = useState<Date | null>(() => {
-    const today = new Date()
-    if (today.getFullYear() === year && today.getMonth() === month) {
-      return today
-    }
-    return null
-  })
-
   const handlePrevMonth = useCallback(() => {
     const newDate = new Date(year, month - 1)
     const newMonthStr = `${newDate.getFullYear()}-${String(newDate.getMonth() + 1).padStart(2, '0')}`
     setCalendarFilters({ month: newMonthStr })
-    setSelectedDay(null)
-  }, [year, month, setCalendarFilters])
+    onSelectDay(null)
+  }, [year, month, setCalendarFilters, onSelectDay])
 
   const handleNextMonth = useCallback(() => {
     const newDate = new Date(year, month + 1)
     const newMonthStr = `${newDate.getFullYear()}-${String(newDate.getMonth() + 1).padStart(2, '0')}`
     setCalendarFilters({ month: newMonthStr })
-    setSelectedDay(null)
-  }, [year, month, setCalendarFilters])
+    onSelectDay(null)
+  }, [year, month, setCalendarFilters, onSelectDay])
 
   const handlePlaceChange = (placeId: string | null) => {
     setCalendarFilters({ placeId })
@@ -104,7 +101,7 @@ export function CalendarGrid() {
       const newMonthStr = `${day.date.getFullYear()}-${String(day.date.getMonth() + 1).padStart(2, '0')}`
       setCalendarFilters({ month: newMonthStr })
     }
-    setSelectedDay(day.date)
+    onSelectDay(day.date)
   }
 
   const weekdayHeaders = useMemo(() => {
