@@ -100,8 +100,10 @@ export function HourlyRatesPage() {
           userId: editingRate.userId,
           placeId: selectedPlaceId,
           rate: formData.rate,
-          validFrom: formData.validFrom,
-          validTo: formData.validTo ?? null,
+          validFrom: new Date(formData.validFrom).toISOString(),
+          validTo: formData.validTo
+            ? new Date(formData.validTo).toISOString()
+            : null,
         })
       }
 
