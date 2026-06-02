@@ -1,7 +1,7 @@
 import { apiService } from '@/shared/services'
 import type { ApiResponse } from '@/shared/types/api-response.type'
-import type { WorkSessionSummaryResponseDTO } from './dto/response/work-session-summary.response.dto'
-import type { WorkSessionDetailResponseDTO } from './dto/response/work-session-detail.response.dto'
+import type { WorkSessionSummaryResponseDTO } from '../dto/response/work-session-summary.response.dto'
+import type { WorkSessionDetailResponseDTO } from '../dto/response/work-session-detail.response.dto'
 import type { AxiosResponse } from 'axios'
 
 export interface SummaryQueryParams {
@@ -25,7 +25,7 @@ export interface DetailQueryParams {
   size?: number
 }
 
-function buildQueryString(params: Record<string, unknown>): string {
+function buildQueryString<T extends object>(params: T): string {
   const searchParams = new URLSearchParams()
   Object.entries(params).forEach(([key, value]) => {
     if (value === undefined || value === null) return

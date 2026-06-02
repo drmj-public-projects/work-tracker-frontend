@@ -14,8 +14,6 @@ import {
   formatDateISO,
 } from '../utils/calendar-helpers'
 import { formatDuration } from '@/shared/utils/time-formatters'
-import type { WorkSessionSummary } from '../../models/work-session-summary.model'
-
 interface CalendarGridProps {
   selectedDay: Date | null
   onSelectDay: (day: Date | null) => void

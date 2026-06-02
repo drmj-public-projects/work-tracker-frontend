@@ -32,7 +32,7 @@ export function BreakdownChart({ data }: BreakdownChartProps) {
             ))}
           </Pie>
           <Tooltip
-            formatter={(value: number) => formatCurrency(value)}
+            formatter={(value) => formatCurrency(Number(value))}
             contentStyle={{
               backgroundColor: 'var(--card)',
               border: '1px solid var(--border)',

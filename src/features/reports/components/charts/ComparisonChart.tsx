@@ -33,7 +33,7 @@ export function ComparisonChart({ data }: ComparisonChartProps) {
             tickFormatter={(value: number) => `$${value}`}
           />
           <Tooltip
-            formatter={(value: number) => formatCurrency(value)}
+            formatter={(value) => formatCurrency(Number(value))}
             contentStyle={{
               backgroundColor: 'var(--card)',
               border: '1px solid var(--border)',
