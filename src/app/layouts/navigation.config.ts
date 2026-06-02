@@ -59,6 +59,12 @@ export const navigationItems: NavItem[] = [
     ],
   },
   {
+    label: 'nav.hourlyRates',
+    icon: 'Banknote',
+    path: '/hourly-rates',
+    roles: ['ADMIN', 'EMPLOYER'],
+  },
+  {
     label: 'nav.memberships',
     icon: 'Users',
     roles: ['ADMIN', 'EMPLOYER'],

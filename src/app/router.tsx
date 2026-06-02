@@ -15,6 +15,7 @@ import { CalendarPage } from '@/features/reports/pages/CalendarPage'
 import { HistoryPage } from '@/features/reports/pages/HistoryPage'
 import { SettingsPage } from '@/features/settings/pages/SettingsPage'
 import { InvitationCodesPage } from '@/features/memberships/pages/InvitationCodesPage'
+import { HourlyRatesPage } from '@/features/hourly-rates/pages/HourlyRatesPage'
 import { ProfilePage } from '@/features/profile/pages/ProfilePage'
 import { EditProfilePage } from '@/features/profile/pages/EditProfilePage'
 import { ProtectedRoute, RoleGuard } from './guards'
@@ -51,6 +52,10 @@ export function AppRouter() {
             <Route path="/reports/history" element={<HistoryPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/profile/edit" element={<EditProfilePage />} />
+
+            <Route element={<RoleGuard allowedRoles={['ADMIN', 'EMPLOYER']} />}>
+              <Route path="/hourly-rates" element={<HourlyRatesPage />} />
+            </Route>
 
             <Route element={<RoleGuard allowedRoles={['ADMIN', 'EMPLOYER']} />}>
               <Route
