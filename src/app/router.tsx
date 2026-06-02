@@ -8,6 +8,8 @@ import { WorkSessionsPage } from '@/features/work-sessions/pages/WorkSessionsPag
 import { ActiveTimerPage } from '@/features/work-sessions/pages/ActiveTimerPage'
 import { ManualEntryPage } from '@/features/work-sessions/pages/ManualEntryPage'
 import { PlacesPage } from '@/features/places/pages/PlacesPage'
+import { CreatePlacePage } from '@/features/places/pages/CreatePlacePage'
+import { EditPlacePage } from '@/features/places/pages/EditPlacePage'
 import { AnalyticsPage } from '@/features/reports/pages/AnalyticsPage'
 import { CalendarPage } from '@/features/reports/pages/CalendarPage'
 import { HistoryPage } from '@/features/reports/pages/HistoryPage'
@@ -40,6 +42,10 @@ export function AppRouter() {
               element={<ManualEntryPage />}
             />
             <Route path="/places" element={<PlacesPage />} />
+            <Route element={<RoleGuard allowedRoles={['ADMIN', 'EMPLOYER']} />}>
+              <Route path="/places/new" element={<CreatePlacePage />} />
+              <Route path="/places/:id/edit" element={<EditPlacePage />} />
+            </Route>
             <Route path="/reports/analytics" element={<AnalyticsPage />} />
             <Route path="/reports/calendar" element={<CalendarPage />} />
             <Route path="/reports/history" element={<HistoryPage />} />

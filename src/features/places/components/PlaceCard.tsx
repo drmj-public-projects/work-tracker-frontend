@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import { MapPin, Pencil, Building2, ExternalLink } from 'lucide-react'
 import type { Place } from '../models/place.model'
 
@@ -9,6 +10,7 @@ interface PlaceCardProps {
 
 export function PlaceCard({ place, canEdit = false }: PlaceCardProps) {
   const { t } = useTranslation('auth')
+  const navigate = useNavigate()
 
   const formattedDate = new Date(place.createdAt).toLocaleDateString('en-US', {
     month: 'short',
@@ -91,6 +93,7 @@ export function PlaceCard({ place, canEdit = false }: PlaceCardProps) {
         {canEdit && (
           <button
             type="button"
+            onClick={() => navigate(`/places/${place.id}/edit`)}
             className="flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary-hover transition-colors"
           >
             <Pencil className="w-4 h-4" />
