@@ -13,6 +13,7 @@ import {
   ChevronDown,
   Users,
   Ticket,
+  Banknote,
   type LucideIcon,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
@@ -31,6 +32,7 @@ const iconMap: Record<string, LucideIcon> = {
   Clock,
   Users,
   Ticket,
+  Banknote,
 }
 
 interface SidebarItemProps {

@@ -48,6 +48,7 @@ export function CreatePlacePage() {
         onSubmit={handleSubmit}
         isSubmitting={createMutation.isPending}
         submitLabel={t('createPlace.submit')}
+        useGeolocation={true}
       />
     </div>
   )

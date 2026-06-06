@@ -13,6 +13,7 @@ interface PlaceFormProps {
   onSubmit: (data: PlaceFormData) => void
   isSubmitting: boolean
   submitLabel: string
+  useGeolocation?: boolean
 }
 
 const defaultValues: PlaceFormData = {
@@ -28,6 +29,7 @@ export function PlaceForm({
   onSubmit,
   isSubmitting,
   submitLabel,
+  useGeolocation,
 }: PlaceFormProps) {
   const { t } = useTranslation('auth')
   const {
@@ -151,6 +153,7 @@ export function PlaceForm({
           longitude={longitude}
           radiusMeters={radiusMeters}
           onLocationChange={handleLocationChange}
+          useGeolocation={useGeolocation}
         />
       </div>
     </form>

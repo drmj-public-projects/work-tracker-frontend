@@ -78,6 +78,7 @@ export function EditPlacePage() {
         onSubmit={handleSubmit}
         isSubmitting={updateMutation.isPending}
         submitLabel={t('editPlace.submit')}
+        useGeolocation={false}
       />
     </div>
   )

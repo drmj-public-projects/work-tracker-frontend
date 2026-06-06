@@ -11,10 +11,11 @@ import { Icon, type LatLngExpression } from 'leaflet'
 
 const FALLBACK_CENTER = { lat: 19.4326, lng: -99.1332 } // Mexico City
 
+// Self-hosted Leaflet marker images (copied to public/leaflet/)
 const defaultIcon = new Icon({
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconUrl: '/leaflet/marker-icon.png',
+  iconRetinaUrl: '/leaflet/marker-icon-2x.png',
+  shadowUrl: '/leaflet/marker-shadow.png',
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
@@ -26,6 +27,7 @@ interface PlaceMapPickerProps {
   longitude: number
   radiusMeters: number
   onLocationChange: (lat: number, lng: number) => void
+  useGeolocation?: boolean
 }
 
 function MapClickHandler({
@@ -82,19 +84,20 @@ export function PlaceMapPicker({
   longitude,
   radiusMeters,
   onLocationChange,
+  useGeolocation: shouldUseGeolocation = false,
 }: PlaceMapPickerProps) {
   const isAtOrigin = latitude === 0 && longitude === 0
 
   const { center: geolocationCenter, ready: geolocationReady } = useGeolocation(
-    isAtOrigin ? onLocationChange : undefined
+    shouldUseGeolocation && isAtOrigin ? onLocationChange : undefined
   )
 
   const displayCenter: LatLngExpression = useMemo(() => {
-    if (isAtOrigin && geolocationReady) {
+    if (shouldUseGeolocation && isAtOrigin && geolocationReady) {
       return geolocationCenter
     }
     return [latitude, longitude]
-  }, [latitude, longitude, isAtOrigin, geolocationCenter, geolocationReady])
+  }, [latitude, longitude, shouldUseGeolocation, isAtOrigin, geolocationCenter, geolocationReady])
 
   const handleMarkerDrag = useCallback(
     (e: { target: { getLatLng: () => { lat: number; lng: number } } }) => {
@@ -104,9 +107,16 @@ export function PlaceMapPicker({
     [onLocationChange]
   )
 
+  // Key to force stable remount under React StrictMode
+  const mapKey = useMemo(() => {
+    const [lat, lng] = displayCenter as [number, number]
+    return `${lat}-${lng}-${radiusMeters}`
+  }, [displayCenter, radiusMeters])
+
   return (
     <div className="w-full h-full min-h-[400px] rounded-xl overflow-hidden border border-border">
       <MapContainer
+        key={mapKey}
         center={displayCenter}
         zoom={13}
         scrollWheelZoom={true}
