@@ -92,6 +92,7 @@ export function InvitationCodesTable({
 }
 
 function CodeCell({ code }: { code: string }) {
+  const { t } = useTranslation('auth')
   const [copied, setCopied] = useState(false)
 
   const handleCopy = async () => {
