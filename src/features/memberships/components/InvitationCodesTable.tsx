@@ -5,6 +5,7 @@ import { DataTable, type ColumnDef } from '@/shared/components/DataTable'
 import { InvitationCodeStatusBadge, type InvitationCodeStatus } from './InvitationCodeStatusBadge'
 import { UsageProgressBar } from './UsageProgressBar'
 import { InvitationCodeRowActions } from './InvitationCodeRowActions'
+import { useFormattedDate } from '@/shared/hooks/useFormattedDate'
 import type { InvitationCode } from '../models/invitation-code.model'
 
 interface InvitationCodesTableProps {
@@ -19,6 +20,7 @@ export function InvitationCodesTable({
   isRevoking = false,
 }: InvitationCodesTableProps) {
   const { t } = useTranslation('auth')
+  const { formatDate } = useFormattedDate()
 
   const getStatus = (code: InvitationCode): InvitationCodeStatus => {
     if (!code.isActive || code.currentUses >= code.maxUses) return 'exhausted'
@@ -37,11 +39,7 @@ export function InvitationCodesTable({
       header: t('invitationCodes.colCreated'),
       cell: (row) => (
         <span className="text-foreground">
-          {row.createdAt.toLocaleDateString(undefined, {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-          })}
+          {formatDate(row.createdAt.toISOString())}
         </span>
       ),
     },
@@ -51,11 +49,7 @@ export function InvitationCodesTable({
       cell: (row) => (
         <span className="text-foreground">
           {row.expiresAt
-            ? row.expiresAt.toLocaleDateString(undefined, {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-              })
+            ? formatDate(row.expiresAt.toISOString())
             : t('invitationCodes.expirationNever')}
         </span>
       ),
@@ -115,7 +109,7 @@ function CodeCell({ code }: { code: string }) {
       type="button"
       onClick={handleCopy}
       className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted font-mono text-sm text-foreground hover:bg-muted-foreground/10 transition-colors cursor-pointer"
-      title="Copy to clipboard"
+      title={t('settings.copy')}
     >
       <span>{code}</span>
       {copied ? (

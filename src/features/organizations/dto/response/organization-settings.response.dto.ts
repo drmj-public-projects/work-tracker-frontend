@@ -4,4 +4,5 @@ export interface OrganizationSettingsResponseDTO {
   requireLocation: boolean
   allowManualEntries: boolean
   allowEditAfterSubmit: boolean
+  timeZone: string
 }

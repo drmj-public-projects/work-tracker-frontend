@@ -4,4 +4,5 @@ export interface OrganizationSettings {
   requireLocation: boolean;
   allowManualEntries: boolean;
   allowEditAfterSubmit: boolean;
+  timeZone: string;
 }

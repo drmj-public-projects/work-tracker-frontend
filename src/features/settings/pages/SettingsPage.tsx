@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Settings, MapPin, FilePlus, PenLine, Building2, Copy, Check, Loader2 } from 'lucide-react'
+import { Settings, MapPin, FilePlus, PenLine, Building2, Copy, Check, Loader2, Globe } from 'lucide-react'
 import { useAuthStore } from '@/shared/store/authStore'
 import { useOrganizationSettings } from '@/features/organizations/hooks/useOrganizationSettings'
 import { useSaveOrganizationSettings } from '@/features/organizations/hooks/useSaveOrganizationSettings'
+import { TIME_ZONES } from '@/shared/utils/time-formatters'
 
 function ToggleSwitch({
   checked,
@@ -49,6 +50,7 @@ export function SettingsPage() {
   const [requireLocation, setRequireLocation] = useState(false)
   const [allowManualEntries, setAllowManualEntries] = useState(true)
   const [allowEditAfterSubmit, setAllowEditAfterSubmit] = useState(true)
+  const [timeZone, setTimeZone] = useState('UTC')
   const [copied, setCopied] = useState(false)
   const [hasChanges, setHasChanges] = useState(false)
 
@@ -58,6 +60,7 @@ export function SettingsPage() {
       setRequireLocation(currentSettings.requireLocation)
       setAllowManualEntries(currentSettings.allowManualEntries)
       setAllowEditAfterSubmit(currentSettings.allowEditAfterSubmit)
+      setTimeZone(currentSettings.timeZone)
       setHasChanges(false)
     }
   }, [currentSettings])
@@ -68,9 +71,10 @@ export function SettingsPage() {
     const changed =
       requireLocation !== currentSettings.requireLocation ||
       allowManualEntries !== currentSettings.allowManualEntries ||
-      allowEditAfterSubmit !== currentSettings.allowEditAfterSubmit
+      allowEditAfterSubmit !== currentSettings.allowEditAfterSubmit ||
+      timeZone !== currentSettings.timeZone
     setHasChanges(changed)
-  }, [requireLocation, allowManualEntries, allowEditAfterSubmit, currentSettings])
+  }, [requireLocation, allowManualEntries, allowEditAfterSubmit, timeZone, currentSettings])
 
   const handleSave = () => {
     if (!selectedOrganizationId) return
@@ -79,6 +83,7 @@ export function SettingsPage() {
         requireLocation,
         allowManualEntries,
         allowEditAfterSubmit,
+        timeZone,
       },
       {
         onSuccess: (saved) => {
@@ -94,6 +99,7 @@ export function SettingsPage() {
       setRequireLocation(currentSettings.requireLocation)
       setAllowManualEntries(currentSettings.allowManualEntries)
       setAllowEditAfterSubmit(currentSettings.allowEditAfterSubmit)
+      setTimeZone(currentSettings.timeZone)
     }
     setHasChanges(false)
   }
@@ -240,6 +246,32 @@ export function SettingsPage() {
               </div>
             </div>
           ))}
+          {/* Time Zone */}
+          <div className="flex items-start justify-between gap-4 py-2">
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                <Globe className="w-4 h-4 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-foreground">{t('settings.timeZone')}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{t('settings.timeZoneDesc')}</p>
+              </div>
+            </div>
+            <div className="shrink-0">
+              <select
+                value={timeZone}
+                onChange={(e) => setTimeZone(e.target.value)}
+                disabled={saveMutation.isPending}
+                className="h-[var(--input-height-md)] bg-input/30 border border-border rounded-lg text-foreground px-3 focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all cursor-pointer"
+              >
+                {TIME_ZONES.map((zone) => (
+                  <option key={zone.value} value={zone.value}>
+                    {zone.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
       </div>
 

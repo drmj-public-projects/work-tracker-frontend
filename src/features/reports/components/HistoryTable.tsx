@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import { formatDate, formatTimeRange, formatDuration, formatCurrency } from '@/shared/utils/time-formatters'
+import { formatDuration, formatCurrency } from '@/shared/utils/time-formatters'
+import { useFormattedDate } from '@/shared/hooks/useFormattedDate'
 import type { WorkSession } from '@/features/work-sessions/models/work-session.model'
 
 interface HistoryTableProps {
@@ -8,6 +9,7 @@ interface HistoryTableProps {
 
 export function HistoryTable({ sessions }: HistoryTableProps) {
   const { t } = useTranslation('auth')
+  const { formatDate, formatTimeRange } = useFormattedDate()
 
   return (
     <div className="overflow-x-auto">
@@ -49,14 +51,13 @@ export function HistoryTable({ sessions }: HistoryTableProps) {
             </tr>
           ) : (
             sessions.map((session) => {
-              const dateInfo = formatDate(session.startTime)
+              const dateStr = formatDate(session.startTime)
               const timeRange = formatTimeRange(session.startTime, session.endTime)
 
               return (
                 <tr key={session.id} className="hover:bg-muted/30 transition-colors">
                   <td className="px-4 py-4">
-                    <div className="font-medium text-foreground">{dateInfo.date}</div>
-                    <div className="text-xs text-muted-foreground">{dateInfo.day}</div>
+                    <div className="font-medium text-foreground">{dateStr}</div>
                   </td>
                   <td className="px-4 py-4 whitespace-pre-line text-foreground">{timeRange}</td>
                   <td className="px-4 py-4 text-foreground">
@@ -82,7 +83,7 @@ export function HistoryTable({ sessions }: HistoryTableProps) {
                             : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                     }`}>
                       <span className="w-1.5 h-1.5 rounded-full bg-current mr-1.5" />
-                      {session.status}
+                      {t(`history.statusOptions.${session.status.toLowerCase()}` as any)}
                     </span>
                   </td>
                   <td className="px-4 py-4">

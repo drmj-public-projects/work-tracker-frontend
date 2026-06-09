@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Timer, MapPin } from 'lucide-react'
-import { formatDateShort, formatTime, formatMinutesToHours } from '@/shared/utils/time-formatters'
+import { formatMinutesToHours } from '@/shared/utils/time-formatters'
+import { useFormattedDate } from '@/shared/hooks/useFormattedDate'
 import type { WorkSession } from '@/features/work-sessions/models/work-session.model'
 
 interface RecentActivityListProps {
@@ -10,6 +11,7 @@ interface RecentActivityListProps {
 
 export function RecentActivityList({ sessions }: RecentActivityListProps) {
   const { t } = useTranslation('auth')
+  const { formatDateShort, formatTime } = useFormattedDate()
 
   return (
     <div className="bg-card border border-border rounded-xl overflow-hidden">
@@ -80,7 +82,7 @@ export function RecentActivityList({ sessions }: RecentActivityListProps) {
                     }`}
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-current mr-1.5" />
-                    {session.status}
+                    {t(`history.statusOptions.${session.status.toLowerCase()}` as any)}
                   </span>
                 </div>
               </div>

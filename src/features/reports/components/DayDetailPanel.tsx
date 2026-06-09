@@ -4,7 +4,8 @@ import { CalendarDays, Clock, Plus } from 'lucide-react'
 import { useWorkSessionDetail } from '../hooks/useReports'
 import { useAuthStore } from '@/shared/store/authStore'
 import { useReportsStore } from '../store/reportsStore'
-import { formatTimeRange, formatDuration } from '@/shared/utils/time-formatters'
+import { formatDuration } from '@/shared/utils/time-formatters'
+import { useFormattedDate } from '@/shared/hooks/useFormattedDate'
 import type { WorkSession } from '@/features/work-sessions/models/work-session.model'
 
 interface DayDetailPanelProps {
@@ -36,9 +37,9 @@ export function DayDetailPanel({ selectedDay }: DayDetailPanelProps) {
   const { data: dayDetail, isLoading } = useWorkSessionDetail(detailParams || {})
   const sessions = dayDetail?.sessions ?? []
 
-  const formattedDate = selectedDay
-    ? selectedDay.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-    : ''
+  const { formatDate, formatTimeRange } = useFormattedDate()
+
+  const formattedDate = selectedDay ? formatDate(selectedDay.toISOString()) : ''
 
   return (
     <div className="bg-card border border-border rounded-xl p-5">
@@ -81,7 +82,7 @@ export function DayDetailPanel({ selectedDay }: DayDetailPanelProps) {
                               ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
                               : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                       }`}>
-                        {session.status}
+                        {t(`history.statusOptions.${session.status.toLowerCase()}` as any)}
                       </span>
                     </div>
                     <span className="text-sm font-semibold text-foreground">

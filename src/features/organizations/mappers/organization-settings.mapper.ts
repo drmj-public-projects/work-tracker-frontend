@@ -22,5 +22,6 @@ export function mapOrganizationSettingsResponseToOrganizationSettings(
     allowEditAfterSubmit: toBoolean(
       dto.allowEditAfterSubmit
     ),
+    timeZone: dto.timeZone || 'UTC',
   }
 }

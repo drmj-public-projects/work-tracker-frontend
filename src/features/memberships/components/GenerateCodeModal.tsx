@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Calendar, Hash, Loader2 } from 'lucide-react'
 import { Modal } from '@/shared/components/Modal'
 import { Input } from '@/shared/components/Input'
+import { toISOStringWithTimeZone } from '@/shared/utils/time-formatters'
 import { generateCodeSchema, type GenerateCodeFormData } from '../validation/generate-code.schema'
 import { useAuthStore } from '@/shared/store/authStore'
 import { useGenerateInvitationCode } from '../hooks/useGenerateInvitationCode'
@@ -31,10 +32,11 @@ export function GenerateCodeModal() {
 
   const onSubmit = (data: GenerateCodeFormData) => {
     if (!selectedOrganizationId) return
+    const timeZone = useAuthStore.getState().organizationSettings?.timeZone || 'UTC'
     generateMutation.mutate(
       {
         organizationId: selectedOrganizationId,
-        expiresAt: data.expiresAt ? new Date(data.expiresAt).toISOString() : undefined,
+        expiresAt: data.expiresAt ? toISOStringWithTimeZone(data.expiresAt, timeZone) : undefined,
         maxUses: data.maxUses,
       },
       {

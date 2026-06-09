@@ -5,6 +5,7 @@ import { DataTable, type ColumnDef } from '@/shared/components/DataTable'
 import { Pagination } from '@/shared/components/Pagination'
 import { usePlaces } from '@/features/places/hooks/usePlaces'
 import { useAuthStore } from '@/shared/store/authStore'
+import { useFormattedDate } from '@/shared/hooks/useFormattedDate'
 import {
   useHourlyRates,
   useHourlyRateStats,
@@ -100,10 +101,8 @@ export function HourlyRatesPage() {
           userId: editingRate.userId,
           placeId: selectedPlaceId,
           rate: formData.rate,
-          validFrom: new Date(formData.validFrom).toISOString(),
-          validTo: formData.validTo
-            ? new Date(formData.validTo).toISOString()
-            : null,
+          validFrom: formData.validFrom,
+          validTo: formData.validTo ?? null,
         })
       }
 
@@ -165,7 +164,8 @@ export function HourlyRatesPage() {
         header: t('hourlyRates.colValidity'),
         cell: (row) => {
           if (!row.validFrom) return <span className="text-muted-foreground">—</span>
-          const from = new Date(row.validFrom).toLocaleDateString()
+          const { formatDate } = useFormattedDate()
+          const from = formatDate(row.validFrom)
           if (!row.validTo) {
             return (
               <span className="text-sm text-muted-foreground">
@@ -173,7 +173,7 @@ export function HourlyRatesPage() {
               </span>
             )
           }
-          const to = new Date(row.validTo).toLocaleDateString()
+          const to = formatDate(row.validTo)
           return (
             <span className="text-sm text-muted-foreground">
               {from} — {to}

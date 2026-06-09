@@ -12,6 +12,7 @@ import { withLocation } from '@/shared/utils/withLocation'
 import { SessionPreview } from '@/features/work-sessions/components/SessionPreview'
 import { Guidelines } from '@/features/work-sessions/components/Guidelines'
 import { DateTimeField } from '@/features/work-sessions/components/DateTimeField'
+import { toISOStringWithTimeZone } from '@/shared/utils/time-formatters'
 
 export function ManualEntryPage() {
   const { t } = useTranslation('auth')
@@ -65,14 +66,16 @@ export function ManualEntryPage() {
   const handleSubmit = () => {
     if (!validate() || !user || !selectedOrganizationId) return
 
+    const timeZone = organizationSettings?.timeZone || 'UTC'
+
     withLocation(requiresLocation, (latitude, longitude) => {
       createManualWorkSession.mutate(
         {
           userId: user.id,
           organizationId: selectedOrganizationId,
           placeId: selectedPlaceId,
-          startTime: new Date(startTime).toISOString(),
-          endTime: new Date(endTime).toISOString(),
+          startTime: toISOStringWithTimeZone(startTime, timeZone),
+          endTime: toISOStringWithTimeZone(endTime, timeZone),
           breakMinutes: Math.max(0, breakMinutes),
           notes: notes || undefined,
           latitude,

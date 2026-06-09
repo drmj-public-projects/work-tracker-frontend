@@ -3,9 +3,12 @@ import { z } from 'zod'
 export const createOrganizationSchema = z.object({
   name: z
     .string()
-    .min(1, 'Organization name is required')
-    .min(2, 'Organization name must be at least 2 characters')
-    .max(100, 'Organization name cannot exceed 100 characters'),
+    .min(1, 'createOrganization.validation.nameRequired')
+    .min(2, 'createOrganization.validation.nameMin')
+    .max(100, 'createOrganization.validation.nameMax'),
+  timeZone: z
+    .string()
+    .min(1, 'createOrganization.validation.timeZoneRequired'),
 })
 
 export type CreateOrganizationFormData = z.infer<typeof createOrganizationSchema>

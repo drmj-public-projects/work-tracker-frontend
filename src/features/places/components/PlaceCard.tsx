@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { MapPin, Pencil, Building2, ExternalLink } from 'lucide-react'
+import { useFormattedDate } from '@/shared/hooks/useFormattedDate'
 import type { Place } from '../models/place.model'
 
 interface PlaceCardProps {
@@ -11,12 +12,9 @@ interface PlaceCardProps {
 export function PlaceCard({ place, canEdit = false }: PlaceCardProps) {
   const { t } = useTranslation('auth')
   const navigate = useNavigate()
+  const { formatDate } = useFormattedDate()
 
-  const formattedDate = new Date(place.createdAt).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  })
+  const formattedDate = formatDate(place.createdAt)
 
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${place.latitude},${place.longitude}`
 
@@ -30,7 +28,7 @@ export function PlaceCard({ place, canEdit = false }: PlaceCardProps) {
           type="button"
           className="p-2 rounded-lg hover:bg-muted transition-colors"
         >
-          <span className="sr-only">Options</span>
+          <span className="sr-only">{t('places.options')}</span>
           <svg
             className="w-5 h-5 text-muted-foreground"
             viewBox="0 0 24 24"

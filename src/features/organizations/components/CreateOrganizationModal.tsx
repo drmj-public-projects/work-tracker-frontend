@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Building2, Loader2 } from 'lucide-react'
+import { Building2, Loader2, Globe } from 'lucide-react'
 import { Modal } from '@/shared/components/Modal'
 import { Input } from '@/shared/components/Input'
 import {
@@ -13,6 +13,7 @@ import { organizationService } from '../services/organization.service'
 import { mapOrganizationSettingsResponseToOrganizationSettings } from '../mappers/organization-settings.mapper'
 import { useAuthStore } from '@/shared/store/authStore'
 import { useNavigate } from 'react-router-dom'
+import { TIME_ZONES, getDefaultTimeZone } from '@/shared/utils/time-formatters'
 
 interface CreateOrganizationModalProps {
   isOpen: boolean
@@ -33,13 +34,16 @@ export function CreateOrganizationModal({ isOpen, onClose }: CreateOrganizationM
     formState: { errors },
   } = useForm<CreateOrganizationFormData>({
     resolver: zodResolver(createOrganizationSchema),
+    defaultValues: {
+      timeZone: getDefaultTimeZone(),
+    },
   })
 
   const onSubmit = async (data: CreateOrganizationFormData) => {
     setCreateError(null)
     setIsCreating(true)
     try {
-      const response = await organizationService.create({ name: data.name })
+      const response = await organizationService.create({ name: data.name, timeZone: data.timeZone })
       const org = response.data.data
 
       await selectOrganization({ organizationId: org.id }, org.name)
@@ -100,10 +104,32 @@ export function CreateOrganizationModal({ isOpen, onClose }: CreateOrganizationM
           label={t('createOrganization.nameLabel')}
           icon={<Building2 className="w-5 h-5" />}
           placeholder={t('createOrganization.namePlaceholder')}
-          error={errors.name?.message}
+          error={errors.name?.message ? t(errors.name.message as any) : undefined}
           disabled={isCreating}
           {...register('name')}
         />
+        <div className="w-full">
+          <label className="block text-sm font-medium text-foreground mb-2">
+            {t('createOrganization.timeZoneLabel')}
+          </label>
+          <div className="relative">
+            <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <select
+              {...register('timeZone')}
+              disabled={isCreating}
+              className="w-full h-[var(--input-height-md)] bg-input/30 border border-border rounded-lg text-foreground pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all appearance-none cursor-pointer"
+            >
+              {TIME_ZONES.map((zone) => (
+                <option key={zone.value} value={zone.value}>
+                  {zone.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          {errors.timeZone?.message && (
+            <p className="mt-1.5 text-sm text-destructive">{t(errors.timeZone.message as any)}</p>
+          )}
+        </div>
         {createError && (
           <p className="text-sm text-destructive">{createError}</p>
         )}

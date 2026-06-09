@@ -4,6 +4,8 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Modal } from '@/shared/components/Modal'
 import { Input } from '@/shared/components/Input'
+import { toISOStringWithTimeZone } from '@/shared/utils/time-formatters'
+import { useAuthStore } from '@/shared/store/authStore'
 import { hourlyRateSchema, type HourlyRateFormData } from '../validation/hourly-rate.schema'
 
 interface AssignRateModalProps {
@@ -58,6 +60,17 @@ export function AssignRateModal({
     : t('hourlyRates.modal.assignTitle')
   const description = t('hourlyRates.modal.description', { name: employeeName })
 
+  const handleFormSubmit = (formData: HourlyRateFormData) => {
+    const timeZone = useAuthStore.getState().organizationSettings?.timeZone || 'UTC'
+    onSubmit({
+      ...formData,
+      validFrom: toISOStringWithTimeZone(formData.validFrom, timeZone),
+      validTo: formData.validTo
+        ? toISOStringWithTimeZone(formData.validTo, timeZone)
+        : null,
+    })
+  }
+
   return (
     <Modal
       isOpen={isOpen}
@@ -75,7 +88,7 @@ export function AssignRateModal({
           </button>
           <button
             type="button"
-            onClick={handleSubmit(onSubmit)}
+            onClick={handleSubmit(handleFormSubmit)}
             disabled={isSubmitting}
             className="px-4 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
           >
