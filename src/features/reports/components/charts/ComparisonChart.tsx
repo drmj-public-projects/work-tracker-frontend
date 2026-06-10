@@ -7,7 +7,7 @@ import {
   CartesianGrid,
   Tooltip,
 } from 'recharts'
-import type { ComparisonDataPoint } from '../../utils/report-formatters'
+import type { ComparisonDataPoint } from '../../types'
 import { formatCurrency } from '@/shared/utils/time-formatters'
 
 interface ComparisonChartProps {

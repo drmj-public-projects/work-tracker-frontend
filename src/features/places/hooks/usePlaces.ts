@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { placeService } from '../services/place.service'
 import { mapPlaceResponseToPlace } from '../mappers/place.mapper'
 import type { CreatePlaceRequestDTO } from '../dto/request/create-place.request.dto'
-import type { UpdatePlaceRequestDTO } from '../services/place.service'
+import type { UpdatePlaceRequestDTO } from '../types'
 
 const PLACES_QUERY_KEY = 'places'
 

@@ -18,7 +18,7 @@ import { HourlyRatesStats } from '../components/HourlyRatesStats'
 import { HourlyRatesFilters } from '../components/HourlyRatesFilters'
 import { HourlyRateStatusBadge } from '../components/HourlyRateStatusBadge'
 import { AssignRateModal } from '../components/AssignRateModal'
-import type { HourlyRateByPlace } from '../mappers/hourly-rate.mapper'
+import type { HourlyRateByPlace } from '../types'
 import type { HourlyRateFormData } from '../validation/hourly-rate.schema'
 
 export function HourlyRatesPage() {

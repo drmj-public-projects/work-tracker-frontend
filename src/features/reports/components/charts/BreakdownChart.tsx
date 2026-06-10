@@ -5,7 +5,7 @@ import {
   Cell,
   Tooltip,
 } from 'recharts'
-import type { BreakdownDataPoint } from '../../utils/report-formatters'
+import type { BreakdownDataPoint } from '../../types'
 import { formatCurrency } from '@/shared/utils/time-formatters'
 
 interface BreakdownChartProps {

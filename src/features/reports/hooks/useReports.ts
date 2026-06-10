@@ -4,7 +4,7 @@ import {
   mapSummaryResponseDTOToWorkSessionSummary,
   mapDetailResponseDTOToPage,
 } from '../mappers/report.mapper'
-import type { SummaryQueryParams, DetailQueryParams } from '../services/report.service'
+import type { SummaryQueryParams, DetailQueryParams } from '../types'
 
 const REPORTS_QUERY_KEY = 'reports'
 

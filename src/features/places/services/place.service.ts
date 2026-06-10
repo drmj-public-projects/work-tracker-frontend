@@ -4,13 +4,7 @@ import type { PlaceResponseDTO } from '../dto/response/place.response.dto'
 import type { ApiResponse } from '@/shared/types/api-response.type'
 import type { AxiosResponse } from 'axios'
 
-export interface UpdatePlaceRequestDTO {
-  name: string
-  description: string
-  latitude: number
-  longitude: number
-  radiusMeters: number
-}
+import type { UpdatePlaceRequestDTO } from '../types'
 
 export const placeService = {
   getById: (id: string): Promise<AxiosResponse<ApiResponse<PlaceResponseDTO>>> =>

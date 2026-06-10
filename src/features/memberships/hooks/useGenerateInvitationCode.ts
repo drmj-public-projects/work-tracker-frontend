@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { invitationCodeService } from '../services/invitation-code.service'
 import { mapInvitationCodeResponseToInvitationCode } from '../mappers/invitation-code.mapper'
-import type { GenerateInvitationCodeRequestDTO } from '../services/invitation-code.service'
+import type { GenerateInvitationCodeRequestDTO } from '../types'
 
 const INVITATION_CODES_QUERY_KEY = 'invitation-codes'
 const INVITATION_CODE_STATS_QUERY_KEY = 'invitation-code-stats'

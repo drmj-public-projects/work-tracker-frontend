@@ -6,8 +6,8 @@ React-based frontend for a time tracking application with organization managemen
 
 ## Tech Stack
 
-- **Framework:** React 19 + TypeScript 6 + Vite 8
-- **Styling:** Tailwind CSS 3.4 (v4 with CSS-based config)
+- **Framework:** React 19 + TypeScript 5.x + Vite 8
+- **Styling:** Tailwind CSS 3.4 (with CSS variable-based config in `src/index.css`)
 - **Routing:** React Router 7
 - **HTTP Client:** Axios 1.6.2
 - **State Management:** Zustand (authStore, themeStore, layoutStore) for UI/client state
@@ -70,18 +70,91 @@ src/
 │   │   │   ├── request/           # CreatePlaceRequestDTO
 │   │   │   └── response/          # PlaceResponseDTO
 │   │   ├── models/                # Place
+│   │   ├── types.ts               # UpdatePlaceRequestDTO
 │   │   ├── mappers/               # place.mapper.ts
 │   │   ├── hooks/                 # usePlaces.ts (TanStack Query)
 │   │   ├── components/            # PlaceCard, CreatePlaceCard
 │   │   ├── pages/
-│   │   │   └── PlacesPage.tsx
+│   │   │   ├── PlacesPage.tsx
+│   │   │   ├── CreatePlacePage.tsx
+│   │   │   └── EditPlacePage.tsx
 │   │   └── services/
-│   │       └── place.service.ts   # getById, getByOrganizationId, create
+│   │       └── place.service.ts   # getById, getByOrganizationId, create, update
 │   ├── work-sessions/
+│   │   ├── dto/
+│   │   ├── models/                # WorkSession
+│   │   ├── mappers/               # work-session.mapper.ts
+│   │   ├── hooks/                 # useWorkSessions, useWorkSessionPlaces
+│   │   ├── components/            # TimerCircle, WorkSessionForm, DateTimeField, SessionPreview
+│   │   ├── pages/
+│   │   │   ├── ActiveTimerPage.tsx
+│   │   │   └── ManualEntryPage.tsx
+│   │   └── services/
+│   │       └── work-session.service.ts
 │   ├── reports/
+│   │   ├── dto/
+│   │   │   ├── request/
+│   │   │   └── response/          # WorkSessionSummaryResponseDTO, WorkSessionDetailResponseDTO
+│   │   ├── models/                # WorkSessionSummary, SummaryBlock
+│   │   ├── types.ts               # TrendDataPoint, BreakdownDataPoint, ComparisonDataPoint, SummaryQueryParams, DetailQueryParams
+│   │   ├── mappers/               # report.mapper.ts
+│   │   ├── hooks/                 # useReports, useWorkSessionSummary, useWorkSessionDetail
+│   │   ├── store/                 # reportsStore.ts
+│   │   ├── utils/                 # calendar-helpers.ts, report-formatters.ts
+│   │   ├── components/            # SummaryCards, AnalyticsFilters, CalendarGrid, HistoryTable, DayDetailPanel, charts
+│   │   ├── pages/
+│   │   │   ├── AnalyticsPage.tsx
+│   │   │   ├── CalendarPage.tsx
+│   │   │   └── HistoryPage.tsx
+│   │   └── services/
+│   │       └── report.service.ts
 │   ├── dashboard/
+│   │   ├── components/            # StatCard, ActivityCard, WeekSummaryCard, RecentActivityList
+│   │   └── pages/
+│   │       └── DashboardPage.tsx
 │   ├── settings/
+│   │   ├── dto/
+│   │   │   └── request/
+│   │   │       └── save-organization-settings.request.dto.ts
+│   │   ├── models/                # OrganizationSettings
+│   │   └── pages/
+│   │       └── SettingsPage.tsx
+│   ├── hourly-rates/
+│   │   ├── dto/
+│   │   │   ├── request/           # CreateHourlyRateRequestDTO, UpdateHourlyRateRequestDTO
+│   │   │   └── response/          # HourlyRateResponseDTO, HourlyRateStatsResponseDTO, HourlyRateByPlaceResponseDTO
+│   │   ├── models/                # HourlyRate
+│   │   ├── types.ts               # HourlyRateByPlace, HourlyRateStats, HourlyRate
+│   │   ├── mappers/               # hourly-rate.mapper.ts
+│   │   ├── hooks/                 # useHourlyRates, useHourlyRateStats
+│   │   ├── store/                 # hourlyRateStore.ts
+│   │   ├── validation/            # hourly-rate.schema.ts
+│   │   ├── components/            # HourlyRatesStats, HourlyRatesFilters, HourlyRateStatusBadge, AssignRateModal
+│   │   ├── pages/
+│   │   │   └── HourlyRatesPage.tsx
+│   │   └── services/
+│   │       └── hourly-rate.service.ts
+│   ├── memberships/
+│   │   ├── dto/
+│   │   │   ├── request/           # JoinOrganizationRequestDTO, GenerateInvitationCodeRequestDTO
+│   │   │   └── response/          # MembershipResponseDTO, InvitationCodeResponseDTO, InvitationCodeStatsResponseDTO
+│   │   ├── models/                # Membership, InvitationCode, InvitationCodeStats
+│   │   ├── types.ts               # GenerateInvitationCodeRequestDTO, InvitationCodeStatus
+│   │   ├── mappers/               # invitation-code.mapper.ts
+│   │   ├── hooks/                 # useMemberships, useInvitationCodes, useGenerateInvitationCode
+│   │   ├── store/                 # invitationCodeStore.ts
+│   │   ├── components/            # InvitationCodesTable, InvitationCodeStatusBadge, UsageProgressBar, InvitationCodeRowActions
+│   │   ├── pages/
+│   │   │   └── InvitationCodesPage.tsx
+│   │   └── services/
+│   │       └── invitation-code.service.ts
 │   ├── profile/
+│   │   ├── dto/
+│   │   │   └── request/
+│   │   │       └── update-user.request.dto.ts
+│   │   └── pages/
+│   │       ├── ProfilePage.tsx    # Coming soon
+│   │       └── EditProfilePage.tsx # Coming soon
 │   └── user/                      # Scaffolded, mostly empty
 └── shared/
     ├── components/
@@ -277,18 +350,53 @@ All UI text must use `const { t } = useTranslation('auth')` and translation keys
 18. Role-based access: `useHasRole` hook + navigation gating
 19. Places Module — list view, cards, service, hooks, mapper/model/DTO
 20. Google Maps links on place coordinates
+21. Work Sessions Module — ActiveTimer + ManualEntry (timer, manual entry, form)
+22. Dashboard — StatCard, ActivityCard, WeekSummaryCard, RecentActivityList
+23. Reports Module — Analytics, Calendar, History (summary cards, filters, charts, day detail)
+24. Settings Module — Organization settings (save, edit, theme)
+25. Hourly Rates Module — full CRUD, stats, filters, assign/edit modal
+26. Memberships Module — Invitation codes (list, generate, revoke, stats)
+27. Role-based navigation gating with roles array in navigation.config.ts
 
 ### 🚧 In Progress / Partial
-- Places Module — create/edit forms not wired up yet (UI placeholders exist)
+- Places Module — create/edit forms are wired up (CreatePlacePage, EditPlacePage exist)
+- Work Sessions Module — ActiveTimer and ManualEntry are complete; session history list (WorkSessionsPage) is "Coming soon"
+- Profile Module — ProfilePage and EditProfilePage are "Coming soon"
 
 ### 🚧 Next Steps (Priority TBD by user)
-1. Work Session Module (CORE) — timer, manual entry, session history
-2. Dashboard — summary cards, recent activity
-3. Reports
-4. Settings (ADMIN only)
-5. Profile pages
+1. Profile pages — implement actual profile UI
+2. Work Sessions history page — replace "Coming soon" with real session list
+3. User module — currently scaffolded, decide if needed
+4. Any additional features requested by user
 
 ## Code Guidelines
+
+### Where to put TypeScript interfaces
+
+**Domain models** (entities from the backend, used in multiple places):
+- Go in `features/{feature}/models/`
+- Follow the DTO → Mapper → Model flow
+
+**Internal types** used in **more than one file** within the same feature but **not** a domain model:
+- Go in `features/{feature}/types.ts`
+- Examples: chart data points, query params, filter state, component-agnostic types
+
+**Private types** used in **only one file**:
+- Can stay in that file (e.g., React Props, Zustand store state)
+
+**Bad — importing from utils, mappers, or other components:**
+```tsx
+// ❌ Don't import from a mapper or service
+import type { HourlyRateStats } from '../mappers/hourly-rate.mapper'
+import type { SummaryQueryParams } from '../services/report.service'
+```
+
+**Good — import from types.ts:**
+```tsx
+// ✅ Import from the feature's types.ts
+import type { HourlyRateStats } from '../types'
+import type { SummaryQueryParams } from '../types'
+```
 
 ### DRY — Don't Repeat Yourself
 
@@ -310,6 +418,12 @@ All UI text must use `const { t } = useTranslation('auth')` and translation keys
 | Component | Location | Purpose |
 |---|---|---|
 | `Input` | `shared/components/Input.tsx` | Form input with icon, label, error |
+| `Modal` | `shared/components/Modal.tsx` | Overlay dialog with title, description, footer |
+| `DataTable` | `shared/components/DataTable.tsx` | Generic table with typed columns |
+| `Pagination` | `shared/components/Pagination.tsx` | Page controls for lists |
+| `PlaceSelect` | `shared/components/PlaceSelect.tsx` | Dropdown for places |
+| `BreakMinutesInput` | `shared/components/BreakMinutesInput.tsx` | Number input for break minutes |
+| `NotesTextarea` | `shared/components/NotesTextarea.tsx` | Textarea for notes |
 | `ThemeToggle` | `shared/components/ThemeToggle.tsx` | Dark/light mode toggle |
 | `LanguageToggle` | `shared/components/LanguageToggle.tsx` | EN/ES language switch |
 

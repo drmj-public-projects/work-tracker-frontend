@@ -14,11 +14,7 @@ interface PageDTO<T> {
   last: boolean
 }
 
-export interface GenerateInvitationCodeRequestDTO {
-  organizationId: string
-  expiresAt?: string
-  maxUses?: number
-}
+import type { GenerateInvitationCodeRequestDTO } from '../types'
 
 export const invitationCodeService = {
   getByOrganizationId: (

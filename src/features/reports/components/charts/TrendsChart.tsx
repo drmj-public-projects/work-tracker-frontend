@@ -8,7 +8,7 @@ import {
   CartesianGrid,
   Tooltip,
 } from 'recharts'
-import type { TrendDataPoint } from '../../utils/report-formatters'
+import type { TrendDataPoint } from '../../types'
 interface TrendsChartProps {
   data: TrendDataPoint[]
 }

@@ -3,27 +3,7 @@ import type { ApiResponse } from '@/shared/types/api-response.type'
 import type { WorkSessionSummaryResponseDTO } from '../dto/response/work-session-summary.response.dto'
 import type { WorkSessionDetailResponseDTO } from '../dto/response/work-session-detail.response.dto'
 import type { AxiosResponse } from 'axios'
-
-export interface SummaryQueryParams {
-  placeId?: string
-  organizationId?: string
-  range: string
-  groupBy?: string
-  status?: string[]
-  startDate?: string
-  endDate?: string
-}
-
-export interface DetailQueryParams {
-  placeId?: string
-  organizationId?: string
-  range?: string
-  startDate?: string
-  endDate?: string
-  status?: string[]
-  page?: number
-  size?: number
-}
+import type { SummaryQueryParams, DetailQueryParams } from '../types'
 
 function buildQueryString<T extends object>(params: T): string {
   const searchParams = new URLSearchParams()

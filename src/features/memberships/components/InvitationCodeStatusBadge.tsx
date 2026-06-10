@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next'
-
-export type InvitationCodeStatus = 'active' | 'expired' | 'exhausted'
+import type { InvitationCodeStatus } from '../types'
 
 interface InvitationCodeStatusBadgeProps {
   status: InvitationCodeStatus

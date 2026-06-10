@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { Users, CheckCircle, AlertTriangle, Clock } from 'lucide-react'
-import type { HourlyRateStats } from '../mappers/hourly-rate.mapper'
+import type { HourlyRateStats } from '../types'
 
 interface HourlyRatesStatsProps {
   stats: HourlyRateStats | undefined

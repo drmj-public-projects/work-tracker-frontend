@@ -1,5 +1,6 @@
 import type { ReportRange } from '../store/reportsStore'
 import type { SummaryBlock, WorkSessionSummary } from '../models/work-session-summary.model'
+import type { TrendDataPoint, BreakdownDataPoint, ComparisonDataPoint } from '../types'
 
 export function getCompareRange(range: ReportRange): ReportRange | null {
   switch (range) {
@@ -12,24 +13,12 @@ export function getCompareRange(range: ReportRange): ReportRange | null {
   }
 }
 
-export interface TrendDataPoint {
-  periodLabel: string
-  earnings: number
-  hours: number
-}
-
 export function buildTrendsData(blocks: SummaryBlock[]): TrendDataPoint[] {
   return blocks.map((block) => ({
     periodLabel: block.periodLabel,
     earnings: block.totalPay,
     hours: +(block.totalMinutes / 60).toFixed(2),
   }))
-}
-
-export interface BreakdownDataPoint {
-  name: string
-  value: number
-  color: string
 }
 
 export function buildBreakdownData(
@@ -53,12 +42,6 @@ export function buildBreakdownData(
       color: 'var(--chart-3)',
     },
   ]
-}
-
-export interface ComparisonDataPoint {
-  periodLabel: string
-  current: number
-  previous: number
 }
 
 export function buildComparisonData(
