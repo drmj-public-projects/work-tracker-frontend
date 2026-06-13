@@ -7,11 +7,13 @@ import { Input } from '@/shared/components/Input'
 import { toISOStringWithTimeZone } from '@/shared/utils/time-formatters'
 import { generateCodeSchema, type GenerateCodeFormData } from '../validation/generate-code.schema'
 import { useAuthStore } from '@/shared/store/authStore'
+import { useToast } from '@/shared/hooks/useToast'
 import { useGenerateInvitationCode } from '../hooks/useGenerateInvitationCode'
 import { useInvitationCodeStore } from '../store/invitationCodeStore'
 
 export function GenerateCodeModal() {
   const { t } = useTranslation('auth')
+  const { toastSuccess } = useToast()
   const selectedOrganizationId = useAuthStore((s) => s.selectedOrganizationId)
   const isOpen = useInvitationCodeStore((s) => s.isGenerateModalOpen)
   const setOpen = useInvitationCodeStore((s) => s.setGenerateModalOpen)
@@ -43,6 +45,7 @@ export function GenerateCodeModal() {
         onSuccess: () => {
           reset()
           setOpen(false)
+          toastSuccess('toast.success.created')
         },
       }
     )
@@ -99,11 +102,7 @@ export function GenerateCodeModal() {
           error={errors.maxUses?.message}
           {...register('maxUses', { valueAsNumber: true })}
         />
-        {generateMutation.isError && (
-          <p className="text-sm text-destructive">
-            {t('invitationCodes.generateModal.error')}
-          </p>
-        )}
+
       </form>
     </Modal>
   )

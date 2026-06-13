@@ -6,6 +6,7 @@ import { useInvitationCodes } from '../hooks/useInvitationCodes'
 import { useInvitationCodeStats } from '../hooks/useInvitationCodeStats'
 import { useRevokeInvitationCode } from '../hooks/useRevokeInvitationCode'
 import { useInvitationCodeStore } from '../store/invitationCodeStore'
+import { useToast } from '@/shared/hooks/useToast'
 import { InvitationCodesHeader } from '../components/InvitationCodesHeader'
 import { InvitationCodesStats } from '../components/InvitationCodesStats'
 import { InvitationCodesTable } from '../components/InvitationCodesTable'
@@ -14,6 +15,7 @@ import { Pagination } from '@/shared/components/Pagination'
 
 export function InvitationCodesPage() {
   const { t } = useTranslation('auth')
+  const { toastSuccess } = useToast()
   const selectedOrganizationId = useAuthStore((s) => s.selectedOrganizationId)
   const setGenerateModalOpen = useInvitationCodeStore((s) => s.setGenerateModalOpen)
 
@@ -23,7 +25,6 @@ export function InvitationCodesPage() {
   const {
     data: codesPage,
     isLoading: isLoadingCodes,
-    isError: isCodesError,
   } = useInvitationCodes(selectedOrganizationId, page, size)
 
   const {
@@ -38,7 +39,11 @@ export function InvitationCodesPage() {
   }
 
   const handleRevoke = (codeId: string) => {
-    revokeMutation.mutate(codeId)
+    revokeMutation.mutate(codeId, {
+      onSuccess: () => {
+        toastSuccess('toast.success.deleted')
+      },
+    })
   }
 
   if (isLoadingCodes || isLoadingStats) {
@@ -48,14 +53,6 @@ export function InvitationCodesPage() {
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
           <p className="text-muted-foreground text-sm">{t('invitationCodes.loading')}</p>
         </div>
-      </div>
-    )
-  }
-
-  if (isCodesError) {
-    return (
-      <div className="p-4">
-        <p className="text-destructive">{t('invitationCodes.error')}</p>
       </div>
     )
   }

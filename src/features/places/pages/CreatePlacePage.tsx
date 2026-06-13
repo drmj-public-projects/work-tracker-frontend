@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { Building2 } from 'lucide-react'
 import { useAuthStore } from '@/shared/store/authStore'
+import { useToast } from '@/shared/hooks/useToast'
 import { useCreatePlace } from '../hooks/usePlaces'
 import { PlaceForm } from '../components/PlaceForm'
 import type { PlaceFormData } from '../validation/place.schema'
@@ -12,6 +13,7 @@ export function CreatePlacePage() {
   const selectedOrganizationId = useAuthStore((state) => state.selectedOrganizationId)
 
   const createMutation = useCreatePlace()
+  const { toastSuccess } = useToast()
 
   const handleSubmit = (data: PlaceFormData) => {
     if (!selectedOrganizationId) return
@@ -26,6 +28,7 @@ export function CreatePlacePage() {
       },
       {
         onSuccess: () => {
+          toastSuccess('toast.success.created')
           navigate('/places')
         },
       }

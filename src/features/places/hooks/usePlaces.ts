@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useToast } from '@/shared/hooks/useToast'
 import { placeService } from '../services/place.service'
 import { mapPlaceResponseToPlace } from '../mappers/place.mapper'
 import type { CreatePlaceRequestDTO } from '../dto/request/create-place.request.dto'
@@ -31,6 +32,7 @@ export function usePlaceById(id: string | null) {
 
 export function useCreatePlace() {
   const queryClient = useQueryClient()
+  const { toastSuccess } = useToast()
 
   return useMutation({
     mutationFn: async (data: CreatePlaceRequestDTO) => {
@@ -38,6 +40,7 @@ export function useCreatePlace() {
       return mapPlaceResponseToPlace(response.data.data)
     },
     onSuccess: (_newPlace, variables) => {
+      toastSuccess('toast.success.created')
       queryClient.invalidateQueries({
         queryKey: [PLACES_QUERY_KEY, variables.organizationId],
       })
@@ -47,6 +50,7 @@ export function useCreatePlace() {
 
 export function useUpdatePlace(organizationId: string | null) {
   const queryClient = useQueryClient()
+  const { toastSuccess } = useToast()
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: UpdatePlaceRequestDTO }) => {
@@ -54,6 +58,7 @@ export function useUpdatePlace(organizationId: string | null) {
       return mapPlaceResponseToPlace(response.data.data)
     },
     onSuccess: () => {
+      toastSuccess('toast.success.updated')
       queryClient.invalidateQueries({
         queryKey: [PLACES_QUERY_KEY, organizationId],
       })

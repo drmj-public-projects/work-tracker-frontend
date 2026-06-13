@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { Loader2 } from 'lucide-react'
+import { useToast } from '@/shared/hooks/useToast'
 import { useWorkSessionPlaces } from '@/features/work-sessions/hooks/useWorkSessionPlaces'
 import { useCreateManualWorkSession } from '@/features/work-sessions/hooks/useWorkSessions'
 import { useAuthStore } from '@/shared/store/authStore'
@@ -17,6 +18,7 @@ import { toISOStringWithTimeZone } from '@/shared/utils/time-formatters'
 export function ManualEntryPage() {
   const { t } = useTranslation('auth')
   const navigate = useNavigate()
+  const { toastSuccess } = useToast()
   const selectedOrganizationId = useAuthStore((state) => state.selectedOrganizationId)
   const user = useAuthStore((state) => state.user)
   const organizationSettings = useAuthStore((state) => state.organizationSettings)
@@ -89,6 +91,7 @@ export function ManualEntryPage() {
             setBreakMinutes(0)
             setNotes('')
             setErrors({})
+            toastSuccess('toast.success.created')
           },
         }
       )

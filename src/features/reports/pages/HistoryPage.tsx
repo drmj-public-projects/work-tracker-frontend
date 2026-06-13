@@ -67,12 +67,6 @@ export function HistoryPage() {
 
       <HistoryFilters />
 
-      {error && (
-        <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-4 text-destructive text-sm">
-          {t('history.error')}
-        </div>
-      )}
-
       {isLoading && <LoadingSpinner label={t('history.loading')} />}
 
       {!isLoading && !error && detailPage && (

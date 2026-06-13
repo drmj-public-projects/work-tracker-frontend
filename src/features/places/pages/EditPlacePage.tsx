@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Building2 } from 'lucide-react'
 import { useAuthStore } from '@/shared/store/authStore'
+import { useToast } from '@/shared/hooks/useToast'
 import { usePlaceById, useUpdatePlace } from '../hooks/usePlaces'
 import { PlaceForm } from '../components/PlaceForm'
 import type { PlaceFormData } from '../validation/place.schema'
@@ -14,6 +15,7 @@ export function EditPlacePage() {
 
   const { data: place, isLoading } = usePlaceById(id ?? null)
   const updateMutation = useUpdatePlace(selectedOrganizationId)
+  const { toastSuccess } = useToast()
 
   const handleSubmit = (data: PlaceFormData) => {
     if (!id || !selectedOrganizationId) return
@@ -30,6 +32,7 @@ export function EditPlacePage() {
       },
       {
         onSuccess: () => {
+          toastSuccess('toast.success.updated')
           navigate('/places')
         },
       }

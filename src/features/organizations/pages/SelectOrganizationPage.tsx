@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { Building2, Plus, ArrowRight, Users } from 'lucide-react'
 import { useAuthStore } from '@/shared/store/authStore'
+import { useToast } from '@/shared/hooks/useToast'
+import { isAxiosError } from '@/shared/services'
 import { useOrganizations } from '@/features/organizations/hooks/useOrganizations'
 import { organizationService } from '@/features/organizations/services/organization.service'
 import { mapOrganizationSettingsResponseToOrganizationSettings } from '@/features/organizations/mappers/organization-settings.mapper'
@@ -16,16 +18,15 @@ export function SelectOrganizationPage() {
   const navigate = useNavigate()
   const user = useAuthStore((state) => state.user)
   const selectOrganization = useAuthStore((state) => state.selectOrganization)
+  const { toastError } = useToast()
 
   const { data: organizations, isLoading } = useOrganizations()
 
   const [isSelecting, setIsSelecting] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
   const handleSelectOrg = async (org: Organization) => {
-    setError(null)
     setIsSelecting(org.id)
     try {
       await selectOrganization({ organizationId: org.id }, org.name)
@@ -35,8 +36,13 @@ export function SelectOrganizationPage() {
       )
       useAuthStore.getState().setOrganizationSettings(settings)
       navigate('/dashboard')
-    } catch {
-      setError(t('selectOrganization.error'))
+    } catch (error) {
+      if (isAxiosError(error) && error.response?.data) {
+        const apiError = error.response.data as { errorCode?: string; message?: string }
+        toastError(apiError.errorCode, apiError.message)
+      } else {
+        toastError()
+      }
       setIsSelecting(null)
     }
   }
@@ -65,12 +71,6 @@ export function SelectOrganizationPage() {
             {t('selectOrganization.subtitle')}
           </p>
         </div>
-
-        {error && (
-          <div className="mb-6 p-4 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm text-center">
-            {error}
-          </div>
-        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {organizations?.map((org) => (

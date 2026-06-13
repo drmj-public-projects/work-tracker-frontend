@@ -16,7 +16,7 @@ export function PlacesPage() {
   )
   const canCreate = useHasRole(UserOrganizationRole.ADMIN, UserOrganizationRole.EMPLOYER)
 
-  const { data: places, isLoading, error } = usePlaces(selectedOrganizationId || '')
+  const { data: places, isLoading } = usePlaces(selectedOrganizationId || '')
 
   return (
     <div className="h-full flex flex-col">
@@ -51,13 +51,7 @@ export function PlacesPage() {
         </div>
       )}
 
-      {error && (
-        <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm text-center mb-6">
-          {t('places.error')}
-        </div>
-      )}
-
-      {!isLoading && !error && places?.length === 0 && (
+      {!isLoading && places?.length === 0 && (
         <div className="flex-1 flex items-center justify-center">
           <p className="text-muted-foreground text-lg">
             {t('places.noPlaces')}
@@ -65,7 +59,7 @@ export function PlacesPage() {
         </div>
       )}
 
-      {!isLoading && !error && places && places.length > 0 && (
+      {!isLoading && places && places.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {places.map((place) => (
             <PlaceCard key={place.id} place={place} canEdit={canCreate} />

@@ -1,22 +1,31 @@
 import { useCallback } from 'react'
+import { useToast } from '@/shared/hooks/useToast'
 import { useCurrentWorkSession, useEndWorkSession } from '@/features/work-sessions/hooks/useWorkSessions'
 import { WorkSessionForm } from '@/features/work-sessions/components/WorkSessionForm'
 
 export function ActiveTimerPage() {
   const { data: currentSession, isLoading: isLoadingSession } = useCurrentWorkSession()
   const endWorkSession = useEndWorkSession()
+  const { toastSuccess } = useToast()
 
   const handleEndSession = useCallback(
     ({ latitude, longitude }: { latitude?: number; longitude?: number } = {}) => {
       if (!currentSession) return
-      endWorkSession.mutate({
-        id: currentSession.id,
-        userId: currentSession.userId,
-        latitude,
-        longitude,
-      })
+      endWorkSession.mutate(
+        {
+          id: currentSession.id,
+          userId: currentSession.userId,
+          latitude,
+          longitude,
+        },
+        {
+          onSuccess: () => {
+            toastSuccess('toast.success.updated')
+          },
+        }
+      )
     },
-    [currentSession, endWorkSession]
+    [currentSession, endWorkSession, toastSuccess]
   )
 
   if (isLoadingSession) {

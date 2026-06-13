@@ -88,15 +88,9 @@ export function AnalyticsPage() {
 
       <AnalyticsFilters places={places} />
 
-      {summaryError && (
-        <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-4 text-destructive text-sm">
-          {t('analytics.error')}
-        </div>
-      )}
-
       {isLoading && <LoadingSpinner label={t('analytics.loading')} />}
 
-      {!isLoading && !summaryError && summary && (
+      {!isLoading && summary && (
         <>
           <SummaryCards totals={totals} />
 

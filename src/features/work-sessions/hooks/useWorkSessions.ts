@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useToast } from '@/shared/hooks/useToast'
 import { workSessionService } from '../services/work-session.service'
 import {
   mapWorkSessionResponseToWorkSession,
@@ -24,6 +25,7 @@ export function useCurrentWorkSession() {
 
 export function useStartWorkSession() {
   const queryClient = useQueryClient()
+  const { toastSuccess } = useToast()
 
   return useMutation({
     mutationFn: async (data: StartWorkSessionRequestDTO) => {
@@ -31,6 +33,7 @@ export function useStartWorkSession() {
       return mapWorkSessionResponseToWorkSession(response.data.data)
     },
     onSuccess: () => {
+      toastSuccess('toast.success.created')
       queryClient.invalidateQueries({
         queryKey: [WORK_SESSION_QUERY_KEY, 'current'],
       })

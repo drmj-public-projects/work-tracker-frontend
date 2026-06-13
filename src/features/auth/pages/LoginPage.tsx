@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
@@ -8,14 +7,15 @@ import { Input } from '@/shared/components/Input'
 import { ThemeToggle } from '@/shared/components/ThemeToggle'
 import { LanguageToggle } from '@/shared/components/LanguageToggle'
 import { useAuthStore } from '@/shared/store/authStore'
+import { useToast } from '@/shared/hooks/useToast'
+import { isAxiosError } from '@/shared/services'
 import { loginSchema, type LoginFormData } from '../validation/login.schema'
 
 export function LoginPage() {
   const { t } = useTranslation('auth')
   const navigate = useNavigate()
   const login = useAuthStore((state) => state.login)
-
-  const [apiError, setApiError] = useState<string | null>(null)
+  const { toastError } = useToast()
 
   const {
     register,
@@ -31,12 +31,16 @@ export function LoginPage() {
   })
 
   const onSubmit = async (data: LoginFormData) => {
-    setApiError(null)
     try {
       await login({ email: data.email, password: data.password })
       navigate('/select-organization')
-    } catch {
-      setApiError('Invalid email or password. Please try again.')
+    } catch (error) {
+      if (isAxiosError(error) && error.response?.data) {
+        const apiError = error.response.data as { errorCode?: string; message?: string }
+        toastError(apiError.errorCode, apiError.message)
+      } else {
+        toastError()
+      }
     }
   }
 
@@ -78,12 +82,6 @@ export function LoginPage() {
         onSubmit={handleSubmit(onSubmit)}
         className="w-full max-w-[420px] bg-card rounded-2xl shadow-lg border border-border p-8"
       >
-        {apiError && (
-          <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
-            {apiError}
-          </div>
-        )}
-
         <div className="mb-5">
           <Input
             label={t('login.emailLabel')}

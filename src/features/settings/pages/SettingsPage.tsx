@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Settings, MapPin, FilePlus, PenLine, Building2, Copy, Check, Loader2, Globe } from 'lucide-react'
 import { useAuthStore } from '@/shared/store/authStore'
+import { useToast } from '@/shared/hooks/useToast'
 import { useOrganizationSettings } from '@/features/organizations/hooks/useOrganizationSettings'
 import { useSaveOrganizationSettings } from '@/features/organizations/hooks/useSaveOrganizationSettings'
 import { TIME_ZONES } from '@/shared/utils/time-formatters'
@@ -37,6 +38,7 @@ function ToggleSwitch({
 
 export function SettingsPage() {
   const { t } = useTranslation('auth')
+  const { toastSuccess } = useToast()
   const selectedOrganizationId = useAuthStore((s) => s.selectedOrganizationId)
   const selectedOrganizationName = useAuthStore((s) => s.selectedOrganizationName)
   const setOrganizationSettings = useAuthStore((s) => s.setOrganizationSettings)
@@ -89,6 +91,7 @@ export function SettingsPage() {
         onSuccess: (saved) => {
           setOrganizationSettings(saved)
           setHasChanges(false)
+          toastSuccess('toast.success.saved')
         },
       }
     )
@@ -274,20 +277,6 @@ export function SettingsPage() {
           </div>
         </div>
       </div>
-
-      {/* Error */}
-      {saveMutation.isError && (
-        <div className="mb-4 p-4 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
-          {t('settings.error')}
-        </div>
-      )}
-
-      {/* Success */}
-      {saveMutation.isSuccess && !hasChanges && !saveMutation.isPending && (
-        <div className="mb-4 p-4 rounded-lg bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 text-sm">
-          {t('settings.savedSuccess')}
-        </div>
-      )}
 
       {/* Actions */}
       <div className="flex items-center justify-end gap-3">
