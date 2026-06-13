@@ -40,7 +40,7 @@ export function AnalyticsPage() {
 
   const compareRange = getCompareRange(analyticsFilters.range)
 
-  const { data: summary, isLoading: summaryLoading, error: summaryError } = useWorkSessionSummary(summaryParams)
+  const { data: summary, isLoading: summaryLoading } = useWorkSessionSummary(summaryParams)
   const { data: comparison, isLoading: comparisonLoading } = useWorkSessionComparison(summaryParams, compareRange || '')
 
   const totals = useMemo(() => {
